@@ -186,3 +186,28 @@ user_data_fields = [
 # Recommended only for DocTypes which have limited documents with untranslated names
 # For example: Role, Gender, etc.
 # translated_search_doctypes = []
+
+
+override_doctype_class = {
+	"Stock Entry": "contracting_13.controllers.custom_stock_entry.customStockEntry"
+}
+
+
+
+
+doctype_js = {
+	"Purchase Order" : "public/js/purchase_order.js" ,
+	"Sales Order" : "public/js/sales_order.js" ,
+	"Sales Invoice" : "public/js/sales_invoice.js" ,
+	"Payment Entry" : "public/js/payment_entry.js" ,
+	"Purchase Invoice" : "public/js/purchase_invoice.js" ,
+	"Task" : "contracting/doctype/task/task.js" ,
+	"Stock Entry" : "public/js/stock_entry.js",
+	"Quotation" : "public/js/quotation.js",
+	"Material Request" :"public/js/material_request.js",
+
+}
+
+domains = {
+	'Contracting':'contracting.domains.contracting'
+}
