@@ -209,5 +209,5 @@ doctype_js = {
 }
 
 domains = {
-	'Contracting':'contracting.domains.contracting'
+	'Contracting':'contracting_13.domains.contracting'
 }
