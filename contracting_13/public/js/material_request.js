@@ -1,7 +1,7 @@
 frappe.ui.form.on("Material Request",{
   comparison : function (frm) {
           frappe.call({
-            "method" : "contracting.contracting.doctype.stock_functions.stock_entry_setup" ,
+            "method" : "contracting_13.contracting_13.doctype.stock_functions.stock_entry_setup" ,
             args:{
               "comparison" : frm.doc.comparison,
             },
@@ -34,7 +34,7 @@ frappe.ui.form.on("Material Request",{
     comparison_item:function(frm){
       if(frm.doc.comparison_item){
         frappe.call({
-          "method" : "contracting.contracting.doctype.stock_functions.get_comparision_items" ,
+          "method" : "contracting_13.contracting_13.doctype.stock_functions.get_comparision_items" ,
           args:{
             "comparison" : frm.doc.comparison,
             "item_code" : frm.doc.comparison_item,

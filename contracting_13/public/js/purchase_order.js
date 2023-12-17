@@ -14,7 +14,7 @@ frappe.ui.form.on("Purchase Order", {
         function () {
           frappe.model.open_mapped_doc({
             method:
-              "contracting.contracting.doctype.purchase_order.purchase_order.make_clearence_doc",
+              "contracting_13.contracting_13.doctype.purchase_order.purchase_order.make_clearence_doc",
             frm: frm, //this.frm
           });
         },

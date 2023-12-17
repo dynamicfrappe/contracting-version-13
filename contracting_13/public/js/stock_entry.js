@@ -6,7 +6,7 @@ frappe.ui.form.on("Stock Entry", {
   setup: function (frm) {
     frappe.call({
       method:
-        "contracting.contracting.doctype.stock_functions.fetch_contracting_data",
+        "contracting_13.contracting_13.doctype.stock_functions.fetch_contracting_data",
       callback: function (r) {
         if (r.message) {
         }
@@ -36,7 +36,7 @@ frappe.ui.form.on("Stock Entry", {
     if (frm.doc.against_comparison && frm.doc.stock_entry_type) {
       frappe.call({
         method:
-          "contracting.contracting.doctype.stock_functions.stock_entry_setup",
+          "contracting_13.contracting_13.doctype.stock_functions.stock_entry_setup",
         args: {
           comparison: frm.doc.comparison,
         },
@@ -72,7 +72,7 @@ frappe.ui.form.on("Stock Entry", {
 
         return {
           query:
-            "contracting.contracting.doctype.stock_entry.stock_entry.get_item_query",
+            "contracting_13.contracting_13.doctype.stock_entry.stock_entry.get_item_query",
           filters: filters,
         };
       };
@@ -118,7 +118,7 @@ frappe.ui.form.on("Stock Entry", {
   comparison_item:function(frm){
     if(frm.doc.comparison_item){
       frappe.call({
-        "method" : "contracting.contracting.doctype.stock_functions.get_comparision_items" ,
+        "method" : "contracting_13.contracting_13.doctype.stock_functions.get_comparision_items" ,
         args:{
           "comparison" : frm.doc.comparison,
           "item_code" : frm.doc.comparison_item,

@@ -211,3 +211,22 @@ doctype_js = {
 domains = {
 	'Contracting':'contracting_13.domains.contracting'
 }
+
+override_doctype_dashboards = {
+	"Project": "contracting_13.public.dashboard.project_get_dashboard_data.get_data"
+}
+
+jenv = {
+    "methods": [
+        "get_comparison_item_cards:contracting_13.contract_api.get_comparison_item_cards",
+    ],
+    "filters": []
+}
+
+scheduler_events = {
+
+	"daily": [
+		"contracting_13.contracting_13.doctype.comparison.comparison.get_returnable_insurance"
+	],
+
+}

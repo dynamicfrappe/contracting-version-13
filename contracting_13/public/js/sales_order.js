@@ -16,7 +16,7 @@ frappe.ui.form.on("Sales Order", {
         function () {
           frappe.model.open_mapped_doc({
             method:
-              "contracting.contracting.doctype.task.task.create_tasks_from_sales_order",
+              "contracting_13.contracting_13.doctype.task.task.create_tasks_from_sales_order",
             frm: frm, //this.frm
           });
         },
@@ -27,7 +27,7 @@ frappe.ui.form.on("Sales Order", {
       __("Clearence"),
       function () {
         frappe.model.open_mapped_doc({
-          method: "contracting.contracting.add_client_Sccript.make_clearence",
+          method: "contracting_13.contracting_13.add_client_Sccript.make_clearence",
           frm: frm, //this.frm
         });
       },
@@ -39,7 +39,7 @@ frappe.ui.form.on("Sales Order", {
       function () {
         frappe.model.open_mapped_doc({
           method:
-            "contracting.contracting.doctype.clearance.clearance.create_grand_clearance",
+            "contracting_13.contracting_13.doctype.clearance.clearance.create_grand_clearance",
           frm: frm,
         });
         //frm.events.make_purchase_order(frm);
@@ -53,7 +53,7 @@ frappe.ui.form.on("Sales Order", {
   comparison: function (frm) {
     console.log("com");
     frappe.call({
-      method: "contracting.contracting.global_data.get_comparison_data",
+      method: "contracting_13.contracting_13.global_data.get_comparison_data",
       args: { comparison: frm.doc.comparison },
       callback: function (r) {
         if (r.message) {
@@ -107,7 +107,7 @@ frappe.ui.form.on("Sales Order", {
   },
   set_contracting(frm) {
     frappe.call({
-      method: "contracting.contracting.global_data.get_comparison_data",
+      method: "contracting_13.contracting_13.global_data.get_comparison_data",
       args: { comparison: frm.doc.comparison },
       callback: function (r) {
         if (r.message) {
