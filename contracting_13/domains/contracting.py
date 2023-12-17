@@ -686,5 +686,5 @@ data = {
     },
     ],
 
-    # 'on_setup': 'contracting_v13.contracting_v13.add_client_Sccript.add_sales_order_script'
+    'on_setup': 'contracting_13.contracting_13.add_client_Sccript.add_sales_order_script'
 }
