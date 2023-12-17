@@ -230,3 +230,15 @@ scheduler_events = {
 	],
 
 }
+
+doc_events = {
+		"Stock Entry" : {
+			"on_submit": "contracting_13.contracting_13.doctype.stock_entry.stock_entry.on_submit"
+		} ,
+		"Sales Order" : {
+			"validate": "contracting_13.contracting_13.doctype.stock_entry.stock_entry.update_project_cost"
+		} ,
+		"Purchase Order": {
+		"on_submit": "contracting_13.contracting_13.doctype.purchase_order.purchase_order.update_comparison",
+		"on_cancel": "contracting_13.contracting_13.doctype.purchase_order.purchase_order.update_comparison",}
+}
