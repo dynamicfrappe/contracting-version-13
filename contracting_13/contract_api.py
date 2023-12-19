@@ -227,3 +227,53 @@ def validate_item_code(item_code) :
         return item_code
     else :
         frappe.msgprint(_(f""" Item Code Erro {item_code}"""))
+	
+
+
+
+
+@frappe.whitelist()
+def make_sales_order(source_name, target_doc=None, ignore_permissions=False):
+	def postprocess(source, target):
+		project = source.project
+		cost_center = frappe.db.get_value('Project',project,'cost_center')
+		target.cost_center = cost_center
+		set_missing_values(source, target)
+	
+
+	def set_missing_values(source, target):
+		target.ignore_pricing_rule = 1
+		target.flags.ignore_permissions = True
+		target.run_method("set_missing_values")
+		target.run_method("calculate_taxes_and_totals")
+		target.update({'customer': source.customer})
+		target.update({'is_contracting': 1})
+	comparison = frappe.get_doc("Quotation" ,source_name )
+	doclist = get_mapped_doc("Comparison", comparison.comparison, {
+		"Comparison": {
+			"doctype": "Sales Order",
+			# "field_map": {
+			# 	"customer": "customer",
+			# },
+		},
+		"Comparison Item": {
+			"doctype": "Sales Order Item",
+			"field_map": {
+				"name": "sales_order_item",
+				"parent": "sales_order",
+				"price":"rate",
+				"clearance_item":"item_code"
+			},
+			"add_if_empty": True
+		},
+		"Purchase Taxes and Charges Clearances": {
+			"doctype": "Sales Taxes and Charges",
+			"field_map": {
+				"name": "taxes",
+				"parent": "sales_order"
+			},
+			"add_if_empty": True
+		},
+	}, target_doc,postprocess, ignore_permissions=ignore_permissions)
+
+	return doclist

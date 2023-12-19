@@ -20,3 +20,12 @@ frappe.ui.form.on("Quotation", {
       );
     }
 })
+
+
+
+cur_frm.cscript['Make Sales Order'] = function() {
+	frappe.model.open_mapped_doc({
+		method: "contracting_13.contract_api.make_sales_order",
+		frm: cur_frm
+	})
+}

@@ -203,7 +203,7 @@ doctype_js = {
 	"Sales Invoice" : "public/js/sales_invoice.js" ,
 	"Payment Entry" : "public/js/payment_entry.js" ,
 	"Purchase Invoice" : "public/js/purchase_invoice.js" ,
-	"Task" : "contracting/doctype/task/task.js" ,
+	"Task" : "contracting_13/doctype/task/task.js" ,
 	"Stock Entry" : "public/js/stock_entry.js",
 	"Quotation" : "public/js/quotation.js",
 	"Material Request" :"public/js/material_request.js",

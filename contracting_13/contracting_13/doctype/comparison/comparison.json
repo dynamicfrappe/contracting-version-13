@@ -40,6 +40,7 @@
   "data_19",
   "item",
   "tax_section",
+  "taxes_type",
   "purchase_taxes_and_charges_template",
   "taxes",
   "section_break_5vi8w",
@@ -204,9 +205,9 @@
   },
   {
    "fieldname": "purchase_taxes_and_charges_template",
-   "fieldtype": "Link",
+   "fieldtype": "Dynamic Link",
    "label": "Purchase Taxes and Charges Template",
-   "options": "Purchase Taxes and Charges Template"
+   "options": "taxes_type"
   },
   {
    "fieldname": "taxes",
@@ -399,11 +400,17 @@
    "fieldtype": "Table",
    "label": "Draws",
    "options": "Comparison Draws"
+  },
+  {
+   "fieldname": "taxes_type",
+   "fieldtype": "Select",
+   "label": "Taxes Types",
+   "options": "Purchase Taxes and Charges Template\nSales Taxes and Charges Template"
   }
  ],
  "is_submittable": 1,
  "links": [],
- "modified": "2023-12-19 16:05:36.189441",
+ "modified": "2023-12-19 17:36:42.367937",
  "modified_by": "Administrator",
  "module": "Contracting 13",
  "name": "Comparison",

@@ -3,13 +3,13 @@ frappe.ui.form.on("Sales Order", {
   },
   refresh: function (frm) {
     frm.events.get_cost_centrt(frm)
-    frm.set_query("comparison", function () {
-      return {
-        filters: {
-          tender_status: ["in", ["Approved"]],
-        },
-      };
-    });
+    // frm.set_query("comparison", function () {
+    //   return {
+    //     filters: {
+    //       tender_status: ["in", ["Approved"]],
+    //     },
+    //   };
+    // });
     if (frm.doc.docstatus == 1 && frm.doc.comparison) {
       frm.add_custom_button(
         __("Tasks"),
@@ -22,7 +22,7 @@ frappe.ui.form.on("Sales Order", {
         },
         __("Create")
       );
-    }
+    
     frm.add_custom_button(
       __("Clearence"),
       function () {
@@ -46,6 +46,8 @@ frappe.ui.form.on("Sales Order", {
       },
       __("Create")
     );
+
+    }
   },
   onload: function (frm) {
     console.log("over Write ");
