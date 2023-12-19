@@ -44,32 +44,21 @@ data = {
                 "insert_after":"items_section", 
                 "no_copy":1, 
             },
-            {
-                "fieldname": "colum_break_for_comarsion",
-                "fieldtype": "Column Break",
-                "insert_after": "project",
-
-            },
+         
             {
                 "label":_("Comparison"),
                 "fieldname":"comparison",
                 "fieldtype":"Link",
                 "options":"Comparison",
-                "insert_after":"colum_break_for_comarsion", 
+                "insert_after":"project", 
                 "no_copy":1, 
             },
-            {
-                "label":_("Quotation Section"),
-                "fieldname":"quotation_for_section",
-                "fieldtype":"Section Break",
-                "insert_after":"comparison", 
-                "collapsible": 1,
-            },
+      
             {
                 "label":_("Quotation For"),
                 "fieldname":"quotation_for",
                 "fieldtype":"Text Editor",
-                "insert_after":"quotation_for_section",  
+                "insert_after":"comparison",  
             },
             {
                 "label":_("Card Items"),
@@ -96,6 +85,15 @@ data = {
                 "fieldtype": "Data",
                 "insert_after": "ordered_qty",
             }, 
+              {
+                "label": "Rate Demo",
+                "fieldname": "rate_demo",
+                "fieldtype": "Float",
+                "insert_after": "rate",
+                "in_list_view": "1",
+                "bold": "1",
+            }, 
+
         ],
         'Comparison Item':[
             {

@@ -302,7 +302,11 @@ def get_item_price(item_code):
 @frappe.whitelist()
 def make_sales_order(source_name, target_doc=None, ignore_permissions=False):
 	def postprocess(source, target):
+		project = source.project
+		cost_center = frappe.db.get_value('Project',project,'cost_center')
+		target.cost_center = cost_center
 		set_missing_values(source, target)
+	
 
 	def set_missing_values(source, target):
 		target.ignore_pricing_rule = 1
@@ -364,6 +368,9 @@ def make_purchase_order(source_name, selected_items=None, target_doc=None , igno
 		target.inter_company_order_reference = ""
 		target.customer = ""
 		target.customer_name = ""
+		project = source.project
+		cost_center = frappe.db.get_value('Project',project,'cost_center')
+		target.cost_center = cost_center
 		target.run_method("set_missing_values")
 		target.run_method("calculate_taxes_and_totals")
         

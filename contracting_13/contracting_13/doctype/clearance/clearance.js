@@ -80,7 +80,7 @@ frappe.ui.form.on("Clearance", {
     if (
       frm.doc.docstatus == 0 &&
       frm.doc.insurances &&
-      frm.doc.insurances.length == 0
+      frm.doc.insurances.length
     ) {
       frm.add_custom_button(
         __("Check Insurance"),
@@ -435,7 +435,7 @@ frappe.ui.form.on("Clearance", {
       },
       'callback': function(res){
           frm.set_value("cost_center", res.message.cost_center)
-          frm.refresh_field("cost_center")
+          // frm.refresh_field("cost_center")
       },
     })
   }
