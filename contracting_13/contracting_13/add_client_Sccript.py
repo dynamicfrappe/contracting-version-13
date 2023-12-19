@@ -94,23 +94,11 @@ def make_clearence(source_name, target_doc=None, ignore_permissions=False ,task_
 
 
 @frappe.whitelist()
-def make_task_clearence(source_name, target_doc=None, ignore_permissions=False):
+def make_task_clearence(source_name, target_doc=None, ignore_permissions=False,):
 	task = frappe.get_doc("Task",source_name)
 	if not task.sales_order :
 		frappe.throw(_("Please Set Sales Order"))
-	clearance = make_clearence(task.sales_order, target_doc, ignore_permissions)
-	print ("clearance111111 => ",clearance.items)
-	items = clearance.items or []
-	clearance.set("items",[])
-	print ("clearance11111111111111111 => ",items)
-	for task_item in task.items :
-		item = [x for x in items if x.clearance_item == task_item.item_code]
-		if len(item) > 0 :
-			item = item[0]
-			item.qty = task_item.qty
-			item.clearance_state = task_item.state
-			clearance.append("items",item)
-	print ("clearance 2222222222 => ",clearance.items)
+	clearance = make_clearence(task.sales_order, target_doc, ignore_permissions,source_name)
 	return clearance
 
 
