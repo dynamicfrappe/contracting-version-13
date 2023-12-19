@@ -11,6 +11,12 @@ from frappe import _
 from frappe.model.document import Document
 from erpnext.buying.doctype.purchase_order.purchase_order import make_purchase_invoice
 from erpnext.selling.doctype.sales_order.sales_order import SalesOrder, make_sales_invoice
+
+from frappe.contacts.doctype.address.address import get_company_address
+from frappe.model.utils import get_fetch_values
+from erpnext.stock.doctype.item.item import get_item_defaults
+from erpnext.setup.doctype.item_group.item_group import get_item_group_defaults
+from frappe.model.mapper import get_mapped_doc
 from frappe.utils import (
     DATE_FORMAT,
     add_days,
@@ -631,20 +637,32 @@ def clearance_make_purchase_invoice(source_name, target_doc=None):
 def clearance_make_sales_invoice(source_name, target_doc=None):
 	doc = frappe.get_doc("Clearance", source_name)
 	invoice = make_sales_invoice(doc.sales_order)
-	invoice.set_missing_values()
+	#invoice.set_missing_values()
 	invoice.is_contracting = 1
 	invoice.clearance = doc.name
 	invoice.comparison = doc.comparison
+	invoice.set_onload("ignore_price_list", True)
+	if doc.insurances:
+		for insurance_row in doc.insurances:
+			row = {
+				"charge_type":"Actual",
+				"account_head":insurance_row.get("insurance_account"),
+				"tax_amount":(-1 * flt(insurance_row.get("amount"))) ,
+			}
+			invoice.append("taxes",row)
 	for row in doc.items:
 		invoice_item = [
 			x for x in invoice.items if x.item_code == row.clearance_item]
 		if len(invoice_item) > 0:
 			invoice_item = invoice_item[0]
-			# invoice_item.qty = row.current_qty * (row.current_percent /100)
-			invoice_item.qty = row.current_qty * (row.state_percent /100)
+			invoice_item.qty = row.current_qty
+			invoice_item.price_list_rate = row.total_price/row.current_qty
+			invoice_item.base_price_list_rate = row.total_price/row.current_qty
+			invoice_item.rate = row.total_price/row.current_qty
 
 	try:
-		invoice.save(ignore_permissions=1)
+		#invoice.save(ignore_permissions=1)
+		invoice.set_missing_values(for_validate=False)
 	except Exception as e:
 		frappe.throw(str(e))
 	# doc.purchase_invoice = pi.name

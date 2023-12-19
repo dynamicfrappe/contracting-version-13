@@ -189,7 +189,9 @@ user_data_fields = [
 
 
 override_doctype_class = {
-	"Stock Entry": "contracting_13.controllers.custom_stock_entry.customStockEntry"
+	"Stock Entry": "contracting_13.controllers.custom_stock_entry.customStockEntry" ,
+    "Delivery Note": "contracting.controllers.custom_delivery_note.CustomDeliveryNote",
+	"Sales Invoice": "contracting.controllers.custom_sales_invoice.CustomSalesInvoice",
 }
 
 
