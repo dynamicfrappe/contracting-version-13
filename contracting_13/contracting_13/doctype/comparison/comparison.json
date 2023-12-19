@@ -215,6 +215,7 @@
    "options": "Purchase Taxes and Charges Clearances"
   },
   {
+   "allow_on_submit": 1,
    "fieldname": "project",
    "fieldtype": "Link",
    "label": "Project",
@@ -402,7 +403,7 @@
  ],
  "is_submittable": 1,
  "links": [],
- "modified": "2023-11-28 15:49:56.625492",
+ "modified": "2023-12-19 16:05:36.189441",
  "modified_by": "Administrator",
  "module": "Contracting 13",
  "name": "Comparison",

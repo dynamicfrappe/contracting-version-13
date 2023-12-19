@@ -655,6 +655,18 @@ data = {
                 "label": "Outcome bank grantee Cost Account",
             },
         ],
+           'Project':
+        [
+            {
+                "fieldname": "project_warehouse",
+                "fieldtype": "Link",
+                "options" : "Warehouse",
+                "insert_after": "customer",
+                "label": "Warehouse",
+                "reqd" :1 
+
+            }
+         ]
        
 
 
