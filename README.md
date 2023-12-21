@@ -7,16 +7,28 @@ dynamic
 Dynamic solution to Manage Contracting system 
 
 App Contains 
-1- Tender
-2- Comparison  (to Set insurances / taxes / levels like (Installation / Supply)  and Completion rates )
+1- Tender 
+
+2- Comparison 
+
+      (to Set insurances / taxes / levels like (Installation / Supply)  and Completion rates )
+
 3- Comparison Item Card  --> to manage raw material and Cost of products 
+
 4- Clearance
+
 5- Project
+
 6- Cost Center 
+
 7- Bank Grantee 
+
 8- Task -- form one or more tasks we can create clearance 
+
 9- Sales Order 
+
 10- Sales Invoice 
+
 11- Reporting system 
 
 
