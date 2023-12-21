@@ -80,11 +80,13 @@ def make_clearence(source_name, target_doc=None, ignore_permissions=False ,task_
 			"add_if_empty": True
 		},
 	}, target_doc,postprocess, ignore_permissions=ignore_permissions)
-	task_doc = frappe.get_doc("Task",task_name)
-	for item in task_doc.items:
-		for row in doclist.items:
-			if item.item_code==row.clearance_item:
-				row.current_qty=item.qty
+	if task_name  :
+		task_doc = frappe.get_doc("Task",task_name)
+		for item in task_doc.items:
+			for row in doclist.items:
+				if item.item_code==row.clearance_item:
+					row.current_qty=item.qty
+					row.clearance_state =	item.state
 	return doclist
 
 
@@ -94,11 +96,11 @@ def make_clearence(source_name, target_doc=None, ignore_permissions=False ,task_
 
 
 @frappe.whitelist()
-def make_task_clearence(source_name, target_doc=None, ignore_permissions=False,):
+def make_task_clearence(source_name, target_doc=None, ignore_permissions=False):
 	task = frappe.get_doc("Task",source_name)
 	if not task.sales_order :
 		frappe.throw(_("Please Set Sales Order"))
-	clearance = make_clearence(task.sales_order, target_doc, ignore_permissions,source_name)
+	clearance = make_clearence(task.sales_order, target_doc, ignore_permissions ,source_name)
 	return clearance
 
 

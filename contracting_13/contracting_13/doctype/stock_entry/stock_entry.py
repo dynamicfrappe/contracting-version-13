@@ -49,6 +49,8 @@ def on_submit(self,fun=''):
 
 
 
+
+
 @frappe.whitelist()
 def update_project_cost(self,*args , **kwargs):
     
@@ -58,6 +60,21 @@ def update_project_cost(self,*args , **kwargs):
         if self.comparison :
             comparison = frappe.get_doc("Comparison" , self.comparison )
             self.estimated_cost = float(comparison.total_cost_amount or 0)
+            # Set Missing Values     
+            # tax_template =  comparison.purchase_taxes_and_charges_template
+            # tax_template_obj = frappe.get_doc("Sales Taxes and Charges Template" ,tax_template)
+            # for tax in tax_template_obj.taxes :
+            #     self.taxes= []
+            #     row = {
+			# 	"charge_type":"actual",
+            #     "row_id" :0 , 
+            #     "description" : tax.description,
+			# 	"account_head":tax.account_head,
+			# 	"tax_rate":tax.rate ,
+            #     }
+
+            #     self.append("taxes",row)
+
         if self.project :
             all_projects  = frappe.db.sql(
                 """ SELECT SUM(estimated_cost) as cost FROM `tabSales Order` WHERE project = '%s' """%self.project ,as_dict=True

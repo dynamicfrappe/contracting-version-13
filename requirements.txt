@@ -1,1 +1,4 @@
 # frappe -- https://github.com/frappe/frappe is installed via 'bench init'
+# frappe version -13
+# erpnext Version -13 
+# dunamic master version 

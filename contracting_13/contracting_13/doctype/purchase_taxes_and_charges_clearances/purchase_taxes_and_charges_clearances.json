@@ -1,4 +1,5 @@
 {
+ "actions": [],
  "autoname": "hash",
  "creation": "2021-11-21 15:28:11.309279",
  "doctype": "DocType",
@@ -65,7 +66,6 @@
    "reqd": 1
   },
   {
-   "depends_on": "eval:[\"On Previous Row Amount\", \"On Previous Row Total\"].indexOf(doc.charge_type)!==-1",
    "fieldname": "row_id",
    "fieldtype": "Data",
    "label": "Reference Row #",
@@ -226,7 +226,8 @@
   }
  ],
  "istable": 1,
- "modified": "2022-05-18 09:40:09.847016",
+ "links": [],
+ "modified": "2023-12-20 20:55:20.490433",
  "modified_by": "Administrator",
  "module": "Contracting 13",
  "name": "Purchase Taxes and Charges Clearances",

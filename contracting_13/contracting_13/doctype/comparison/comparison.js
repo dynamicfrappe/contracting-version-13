@@ -509,6 +509,7 @@ frappe.ui.form.on("Comparison", {
     }
   },
   purchase_taxes_and_charges_template: (frm) => {
+    frm.clear_table("taxes")
     if (frm.doc.purchase_taxes_and_charges_template) {
       let tax_temp = frm.doc.taxes_type;
       let doc_type=''
@@ -519,7 +520,7 @@ frappe.ui.form.on("Comparison", {
         doc_type = 'Sales Taxes and Charges Template'
       }
       frappe.call({
-        method: "frappe.client.get",
+        method: "contracting_13.contracting_13.doctype.comparison.comparison.get",
         args: {
           doctype: doc_type ,
           name: frm.doc.purchase_taxes_and_charges_template,

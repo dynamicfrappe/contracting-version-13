@@ -4,6 +4,7 @@
 frappe.ui.form.on("Clearance", {
   setup(frm) {
     let parent = frm.doc.tender ? frm.doc.tender : frm.doc.comparison
+    console.log(parent)
     frm.fields_dict["items"].grid.get_field("clearance_state").get_query =
       function (doc, cdt, cdn) {
         return {
@@ -78,9 +79,7 @@ frappe.ui.form.on("Clearance", {
     frm.events.get_cost_centrt(frm)
     frm.fields_dict["insurances"].grid.wrapper.find(".grid-add-row").hide();
     if (
-      frm.doc.docstatus == 0 &&
-      frm.doc.insurances &&
-      frm.doc.insurances.length
+      frm.doc.docstatus == 0 
     ) {
       frm.add_custom_button(
         __("Check Insurance"),

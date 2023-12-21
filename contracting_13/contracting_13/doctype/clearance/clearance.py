@@ -42,7 +42,10 @@ class Clearance(Document):
 		self.update_purchase_order(cancel=1)
 		if self.is_grand_clearance :
 			self.cancel_sub_clearances()
-	def validate(self) :
+
+
+	def caculate_totals(self) :
+		total_price = 0 
 		total_after_tax = 0 
 		if self.items :
 			for clearence_item in self.items :
@@ -59,13 +62,22 @@ class Clearance(Document):
 					print(state_percent)
 				clearence_item.state_percent = state_percent
 				clearence_item.total_price = (float(clearence_item.price or 0 ) * (float(state_percent or 0 ) / 100 )) * clearence_item.current_qty
+				total_price = total_price + float(clearence_item.total_price or 0)
 				total_after_tax = clearence_item.total_price  + total_after_tax
 		self.total_after_tax = total_after_tax
+		self.total_price = total_price
+		self.total = total_price
+	def validate(self) :
+		total_price = 0 
+		total_after_tax = 0 
+		self.caculate_totals()
+		self.calculate_insurance()	
 
 		if self.item_tax :
 			for  i in  self.item_tax :
-				i.tax_amount  = (i.rate /100) * self.total_after_tax
-				self.total_after_tax = self.total_after_tax + i.tax_amount
+				i.tax_amount  = (i.rate /100) * self.total
+				i.total = i.tax_amount  + self.total
+				self.total_after_tax = self.total  + i.tax_amount
 
 	def save(self):
 		super(Clearance,self).save()
@@ -77,6 +89,7 @@ class Clearance(Document):
 	# def validate(self):
 	# 	self.get_comparison_insurance()
 
+	
 	@frappe.whitelist()
 	def get_comparison_insurance(self) :
 		self.total_insurances = 0
@@ -97,9 +110,8 @@ class Clearance(Document):
 				row.cost_center = item.cost_center
 				row.bank_guarantee = item.bank_guarantee
 				row.bank = item.bank
-
-
 				self.total_insurances += row.amount
+			print(f'\n\n\n===>{self.total_insurances}\n\n')
 
 
 			
@@ -544,6 +556,19 @@ class Clearance(Document):
 					pass
 
 
+
+	def calculate_insurance(self) :
+		total_insurance = 0 
+		if len(self.insurances) > 0 :
+			for i in self.insurances :
+				if int(i.precent or 0) > 0  :
+					#calculate amount 
+					i.amount = float(self.total_price) * (float(i.precent) /100)
+					total_insurance  = total_insurance + i.amount
+		self.total_insurances = total_insurance
+		self.total = self.total_price - self.total_insurances
+
+
 @frappe.whitelist()
 def get_item_price(comparison, item_code, clearance_state, qty):
 	comparison_doc = frappe.get_doc("Comparison", comparison)
@@ -642,6 +667,7 @@ def clearance_make_sales_invoice(source_name, target_doc=None):
 	invoice.clearance = doc.name
 	invoice.comparison = doc.comparison
 	invoice.set_onload("ignore_price_list", True)
+	invoice.taxes = []
 	if doc.insurances:
 		for insurance_row in doc.insurances:
 			row = {

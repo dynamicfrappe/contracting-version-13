@@ -234,8 +234,10 @@ def validate_item_code(item_code) :
 
 @frappe.whitelist()
 def make_sales_order(source_name, target_doc=None, ignore_permissions=False):
+	
 	def postprocess(source, target):
 		project = source.project
+		# target.total_taxes_and_charges = source.purchase_taxes_and_charges_template
 		cost_center = frappe.db.get_value('Project',project,'cost_center')
 		target.cost_center = cost_center
 		set_missing_values(source, target)
@@ -273,6 +275,7 @@ def make_sales_order(source_name, target_doc=None, ignore_permissions=False):
 				"parent": "sales_order"
 			},
 			"add_if_empty": True
+
 		},
 	}, target_doc,postprocess, ignore_permissions=ignore_permissions)
 
