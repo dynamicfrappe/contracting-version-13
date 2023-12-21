@@ -389,7 +389,8 @@
    "fieldname": "clearance_states",
    "fieldtype": "Table",
    "label": "Clearance States ",
-   "options": "Tender States Template"
+   "options": "Tender States Template",
+   "reqd": 1
   },
   {
    "fieldname": "section_break_fbt5a",
@@ -410,7 +411,7 @@
  ],
  "is_submittable": 1,
  "links": [],
- "modified": "2023-12-19 17:36:42.367937",
+ "modified": "2023-12-21 18:15:09.194919",
  "modified_by": "Administrator",
  "module": "Contracting 13",
  "name": "Comparison",

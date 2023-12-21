@@ -21,6 +21,21 @@ from six import string_types
 class Comparison(Document):
 
 	"""
+	Comparison
+	Mapping Totals 
+	Document totals fields :
+			Total                           | total prices with taxes 
+			Expenses Insurances             | total all of insurance with type expense 
+			Payed In Clearance Insurances   | total of all insurance with type payed In Clearance
+			Delivery Insurance value Rate   | total of all insurance with type payed on delivery rate
+			Insurances On Delivery          | total of all insurance with type payed on delivery value 
+			Total QTY                       | SUM of all item qty from item table 
+			Total Price	                    | total prices with out taxes  
+			Tax Total                       | total taxes  
+			Grand Total                     | total prices with taxes 	
+
+
+
 	Can Has -- Tender Or Not 
 	Comparison Functions 
 	1 - calculate totals  for item / insurance /taxes / deductions 
@@ -39,11 +54,13 @@ class Comparison(Document):
 
 	#doctype methods 
 	def validate(self):
+		self.validate_items()
+		self.set_required_fields()
 		self.calculate_total_item_cost()
 		self.validate_cost_centers()
 		self.calc_taxes_and_totals()
 		self.calculate_tax_base_onInsurances()
-
+		self.get_insurance_totals()
 
 	# Functions cost center Controllers 
 	@frappe.whitelist()
@@ -73,11 +90,31 @@ class Comparison(Document):
 				frappe.throw(_("Cost Center {0} is Group at row {2} in {3}")
 					.format(item.cost_center, item.idx , "Items" if item.doctype=="Comparison Item" else "Taxes"))
 	
-	
 	""" 
+	###################
 	  Calculate Totals
-	  
+	##################  
 	"""
+   
+	def validate_items(self) :
+		total_amount  = 0
+		total_qty  = 0 
+		for item in self.item :
+			if not item.cost_center :
+				item.cost_center = self.get_cost_center(item.clearance_item)
+			if float(item.item_cost or 0) == 0 :
+				frappe.msgprint(_(f" Item {item.clearance_item_name} Has no Cost calculated Please create Item Card  "))
+			if self.docstatus == 0 :
+				#caculate toatl line price 
+				item.total_price = float(item.qty or 0) * float(item.price or 0 )
+				#set Remaining 
+				item.remaining_percent = 100 
+				item.remaining_amount  = item.total_price
+			total_amount = total_amount + float(item.total_price or 0 )
+			total_qty = total_qty + float(item.qty) 
+		self.total_amount = total_amount
+		self.total_qty = total_qty
+
 	
 	def calculate_total_item_cost(self):
 		self.total_cost_amount = 0 
@@ -85,6 +122,46 @@ class Comparison(Document):
 			for item in self.item :
 				item.total_item_cost = float(item.qty or 0) * float(item.item_cost or 0)
 				self.total_cost_amount += item.total_item_cost
+
+	def get_insurance_totals(self) :
+		"""
+		To Calculate 
+			Expenses Insurances             | total all of insurance with type expense 
+			Payed In Clearance Insurances   | total of all insurance with type payed In Clearance
+			Delivery Insurance value Rate   | total of all insurance with type payed on delivery rate
+			Insurances On Delivery          | total of all insurance with type payed on delivery value 
+
+
+		"""
+		expense_insurances = 0 
+		payed_in_clearance_insurances = 0 
+		insurances_on_deleviery = 0 
+		for insurance in self.insurances :
+				if insurance.type_of_insurance == "Expenses":
+					insurance.amount = (float(insurance.precent or 0) / 100 ) * float(self.total_price or 0 )
+					expense_insurances +=insurance.amount
+				if insurance.type_of_insurance == "Payed in Clearance":
+					insurance.amount = (float(insurance.precent or 0) / 100 ) * float(self.total_price or 0 )
+					payed_in_clearance_insurances += insurance.amount
+		self.expenses_insurances            = expense_insurances
+		self.payed_in_clearance_insurances  = payed_in_clearance_insurances
+		print(f""" A {self.expenses_insurances} -- B {self.payed_in_clearance_insurances}  """)
+		self.delevery_insurance_value_rate_  = (float(self.payed_in_clearance_insurances or 0)/ float(self.total_price or 0 )) * 100
+		self.insurances_on_deleviery = payed_in_clearance_insurances
+
+
+						
+	"""
+		taxes and insurance 
+
+	"""
+	def set_required_fields(self) :
+		if self.taxes :
+			n = 1
+			for tax in self.taxes :
+				if tax.charge_type == "On Previous Row Total" :
+					tax.row_id = n
+			n = n + 1
 	def calculate_tax_base_onInsurances(self) :
 		calculate_insurance = False 
 		for i in self.taxes : 
@@ -98,16 +175,26 @@ class Comparison(Document):
 					if len(self.insurances) == 1 :
 						for t in self.insurances :
 							i.account_head = t.payed_from_account
-						
 							i.rate = t.precent
 							i.amount = self.total_price * (i.rate /100)
 
-						
-	
 
 	
+	def calculate_tax_base_onInsurances(self) :
+		calculate_insurance = False 
+		for i in self.taxes : 
+			if i.charge_type == "On Previous Row Total" :
+				calculate_insurance = True
 			
-
+		#pass 
+		if calculate_insurance :
+			for i in self.taxes :
+				if i.charge_type =="Actual":
+					if len(self.insurances) == 1 :
+						for t in self.insurances :
+							i.account_head = t.payed_from_account
+							i.rate = t.precent
+							i.amount = self.total_price * (i.rate /100)
 	def calc_taxes_and_totals(self):
 		total_items = 0
 		total_tax  = 0
@@ -115,7 +202,6 @@ class Comparison(Document):
 		for item in self.item:
 			total_items += float(item.qty or 0) * float(item.price or 0)
 		for t in self.taxes:
-			
 			t.tax_amount = float(total_items or 0) * (t.rate /100)
 			total_tax += float(t.tax_amount or 0)
 			t.total =  total_items +total_tax
@@ -424,8 +510,8 @@ def make_purchase_order(source_name, selected_items=None, target_doc=None , igno
 @frappe.whitelist()
 def create_item_cart(items,comparison,tender=None):
 	items = json.loads(items).get('items')
-	# print("from ifffffffffffff",items)
-	# print("comparison",comparison)
+	print("from ifffffffffffff",items)
+	print("comparison",comparison)
 	name_list = []
 	for item in items:
 		doc = frappe.new_doc("Comparison Item Card")
@@ -438,15 +524,17 @@ def create_item_cart(items,comparison,tender=None):
 		doc.save()
 		name_list.append({
 			"item_cart":doc.name,
-			"row_id" :item.get("idx")
+			"row_id" :item.get("idx") ,
+			"item_code" : doc.item_code
 		})
 	if name_list:
 		c_doc = frappe.get_doc("Comparison",comparison)
 		for n in name_list:
 			for item in c_doc.item:
-				if n.get("row_id") == item.get("idx"):
+				if n.get("item_code") == item.get("clearance_item"):
 					item.comparison_item_card = n.get("item_cart")
-		c_doc.save()
+					c_doc.save()
+					frappe.db.commit()
 	return True
 
 

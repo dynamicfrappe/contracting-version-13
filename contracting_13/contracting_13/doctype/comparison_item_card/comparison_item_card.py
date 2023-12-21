@@ -38,14 +38,16 @@ class ComparisonItemCard(Document):
 					# item.price = self.result + float(self.margin_rate  or 0 )
 					# item.total_price = item.price * item.qty
 					item.db_set('item_cost',self.result)
-					item.db_set('price',self.result + float(self.margin_rate  or 0 ))
-					item.db_set('total_price',item.price * item.qty)
+					if float(self.result or 0) > 0 : 
+							
+						item.db_set('price',self.result + float(self.margin_rate  or 0 ))
+						item.db_set('total_price',item.price * item.qty)
 					frappe.db.commit()
-					print(f""" 
-					'item_cost',{self.result} \n
-						'price',self.result + {float(self.margin_rate  or 0 )} \n
-						 'total_price',{item.price * item.qty}
-					""")
+					# print(f""" 
+					# 'item_cost',{self.result} \n
+					# 	'price',self.result + {float(self.margin_rate  or 0 )} \n
+					# 	 'total_price',{item.price * item.qty}
+					# """)
 	def validate(self):
 		self.validate_qty()
 		self.calcualte_profit()
