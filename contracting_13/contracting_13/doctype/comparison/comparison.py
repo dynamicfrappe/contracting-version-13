@@ -15,44 +15,97 @@ import dateutil
 from frappe.utils.data import flt, get_link_to_form, nowdate
 from erpnext.accounts.doctype.sales_invoice.sales_invoice import get_bank_cash_account
 from six import string_types
+
+
+
 class Comparison(Document):
+
+	"""
+	Can Has -- Tender Or Not 
+	Comparison Functions 
+	1 - calculate totals  for item / insurance /taxes / deductions 
+	2 - make insurance payments 
+	3 - create Bank grantee letter 
+	4 - create Sales order 
+	5 - create task 
+	6 - create clearance 
+	7 - create Sales invoice -- against un collected clearance/s 
+
+	function  :
+		doctype methods 
+		cost center controller 
+		calculate totals 
+	"""
+
+	#doctype methods 
+	def validate(self):
+		self.calculate_total_item_cost()
+		self.validate_cost_centers()
+		self.calc_taxes_and_totals()
+		self.calculate_tax_base_onInsurances()
+
+
+	# Functions cost center Controllers 
 	@frappe.whitelist()
 	def get_cost_center(self,item_code):
+		"""
+		params : item_code -> Str Item code /name
+		return item default cost center  OR Project cost center OR company  default cost center
+		"""
 		cost_center = None
-		# company = get_default_company()
 		if self.project :
 			cost_center =  frappe.db.get_value("Project", self.project, "cost_center")
 		if not cost_center and item_code :
 			item = get_item_defaults(item_code,self.company )
-
 			cost_center	= item.get("selling_cost_center")
-		
 		if not cost_center :
 			cost_center = get_default_cost_center(self.company)
 		return cost_center or ""
-	def caculate_total_item_cost(self):
-		self.total_cost_amount = 0 
-		if self.item :
-			for item in self.item :
-				item.total_item_cost = float(item.qty or 0) * float(item.item_cost or 0)
-				self.total_cost_amount += item.total_item_cost
-
-	def validate(self):
-		self.caculate_total_item_cost()
-		self.validate_cost_centers()
-		self.calc_taxes_and_totals()
 
 	def validate_cost_centers (self):
 		for item in (getattr(self,"item" , []) + getattr(self,"taxes" , [])) :
 			is_group, company = frappe.get_cached_value('Cost Center',
 			item.cost_center, ['is_group', 'company'])
-
 			if company != self.company:
 				frappe.throw(_("Cost Center {0} does not belong to Company {1} at row {2} in {3}")
 					.format(item.cost_center, self.company , item.idx , "Items" if item.doctype=="Comparison Item" else "Taxes"))
 			if is_group :
 				frappe.throw(_("Cost Center {0} is Group at row {2} in {3}")
 					.format(item.cost_center, item.idx , "Items" if item.doctype=="Comparison Item" else "Taxes"))
+	
+	
+	""" 
+	  Calculate Totals
+	  
+	"""
+	
+	def calculate_total_item_cost(self):
+		self.total_cost_amount = 0 
+		if self.item :
+			for item in self.item :
+				item.total_item_cost = float(item.qty or 0) * float(item.item_cost or 0)
+				self.total_cost_amount += item.total_item_cost
+	def calculate_tax_base_onInsurances(self) :
+		calculate_insurance = False 
+		for i in self.taxes : 
+			if i.charge_type == "On Previous Row Total" :
+				calculate_insurance = True
+			
+		#pass 
+		if calculate_insurance :
+			for i in self.taxes :
+				if i.charge_type =="Actual":
+					if len(self.insurances) == 1 :
+						for t in self.insurances :
+							i.account_head = t.payed_from_account
+						
+							i.rate = t.precent
+							i.amount = self.total_price * (i.rate /100)
+
+						
+	
+
+	
 			
 
 	def calc_taxes_and_totals(self):
@@ -62,6 +115,7 @@ class Comparison(Document):
 		for item in self.item:
 			total_items += float(item.qty or 0) * float(item.price or 0)
 		for t in self.taxes:
+			
 			t.tax_amount = float(total_items or 0) * (t.rate /100)
 			total_tax += float(t.tax_amount or 0)
 			t.total =  total_items +total_tax
@@ -116,27 +170,12 @@ class Comparison(Document):
 							company_name = company.name
 						)
 						lnk = get_link_to_form(je.doctype, je.name)
-						# je.docstatus = 1
 						je.submit()
 						frappe.msgprint("Journal Entry '%s' Created Successfully"%lnk)
-
-						# je2 = self.create_journal_entry(
-						# 	debit_account  = company.default_cash_account,
-						# 	credit_account = company.insurance_account_for_others_from_us ,
-						# 	amount = item.amount,
-						# 	company_name = company.name,
-						# 	posting_date = current_date,
-						# 	party_type="Customer",
-						# 	party=self.customer,
-						# 	credit_party = True,
-						# )
-						# lnk2 = get_link_to_form(je.doctype, je2.name)
 						item.invocied = 1
 						item.save()
-						#self.insurance_payment = 1
 						self.save()
-						# frappe.msgprint("Journal Entry '%s' Created Successfully"%lnk2)
-		
+					
 					elif item.pay_method == 'Bank Guarantee':
 						#try:
 							doc = frappe.new_doc("Bank Guarantee")
@@ -144,12 +183,16 @@ class Comparison(Document):
 							#doc.reference_doctype = "Sales Order"
 							doc.start_date = date.today()
 							doc.end_date  = current_date
+							
+							#caculate amount base on rate
+							item.amount = (int(item.precent or 0 )/ 100) * self.total_price
 							doc.customer = self.customer
 							doc.amount = item.amount
 							doc.bank  = item.bank
 							doc.bank_account = item.account
 							doc.validity = item.vaidation_days
 							doc.margin_money = item.amount
+							doc.total = item.amount
 							doc.reference_doctype = "Comparison"
 							doc.reference_docname = self.name
 							doc.save()
@@ -191,50 +234,13 @@ class Comparison(Document):
 						je.save()
 						frappe.msgprint("Journal Entry '%s' Created Successfully"%lnk)
 
-						# je2 = self.create_journal_entry(
-						# 	debit_account  = company.default_cash_account,
-						# 	credit_account = company.insurance_account_for_others_from_us ,
-						# 	amount = item.amount,
-						# 	company_name = company.name,
-						# 	posting_date = current_date,
-						# 	party_type="Customer",
-						# 	party=self.customer,
-						# 	credit_party = True,
-						# )
-						# lnk2 = get_link_to_form(je.doctype, je2.name)
 						item.returned = 1
 						item.save()
 						#self.insurance_payment = 1
 						self.save()
 						# frappe.msgprint("Journal Entry '%s' Created Successfully"%lnk2)
 		
-					# elif item.pay_method == 'Bank Guarantee':
-					# 	#try:
-					# 		doc = frappe.new_doc("Bank Guarantee")
-					# 		doc.bg_type  = 'Receiving'
-					# 		#doc.reference_doctype = "Sales Order"
-					# 		doc.start_date = date.today()
-					# 		doc.end_date  = current_date
-					# 		doc.customer = self.customer
-					# 		doc.amount = item.amount
-					# 		doc.bank  = item.bank
-					# 		doc.bank_account = item.account
-					# 		doc.validity = item.vaidation_days
-					# 		doc.margin_money = item.amount
-					# 		doc.reference_doctype = "Comparison"
-					# 		doc.reference_docname = self.name
-					# 		doc.save()
-					# 		item.bank_guarantee = doc.name
-					# 		item.invocied = 1
-					# 		item.save()
-					# 		# doc.docstatus =1
-					# 		# doc.save()
-					# 		#self.insurance_payment = 1
-					# 		self.save()
-					# 		lnk3 = get_link_to_form(doc.doctype, doc.name)
-					# 		frappe.msgprint("Bank Guarantee '%s' Created Successfully"%lnk3)
-					# 	# except Exception as ex:
-					# 	# 	print("error ======> ",str(ex))
+
 
 
 
@@ -302,7 +308,11 @@ def get_item_price(item_code):
 @frappe.whitelist()
 def make_sales_order(source_name, target_doc=None, ignore_permissions=False):
 	def postprocess(source, target):
+		project = source.project
+		cost_center = frappe.db.get_value('Project',project,'cost_center')
+		target.cost_center = cost_center
 		set_missing_values(source, target)
+	
 
 	def set_missing_values(source, target):
 		target.ignore_pricing_rule = 1
@@ -364,6 +374,9 @@ def make_purchase_order(source_name, selected_items=None, target_doc=None , igno
 		target.inter_company_order_reference = ""
 		target.customer = ""
 		target.customer_name = ""
+		project = source.project
+		cost_center = frappe.db.get_value('Project',project,'cost_center')
+		target.cost_center = cost_center
 		target.run_method("set_missing_values")
 		target.run_method("calculate_taxes_and_totals")
         
@@ -464,8 +477,28 @@ def get_returnable_insurance():
 
 
 
+from frappe.model.db_query import check_parent_permission
+#contracting_13.contracting_13.doctype.comparison.comparison
+@frappe.whitelist()
+def get(doctype, name=None, filters=None, parent=None):
 
+	"""Returns a document by name or filters
 
+	:param doctype: DocType of the document to be returned
+	:param name: return document of this `name`
+	:param filters: If name is not set, filter by these values and return the first match"""
+	if frappe.is_table(doctype):
+		check_parent_permission(parent, doctype)
 
+	if filters and not name:
+		name = frappe.db.get_value(doctype, json.loads(filters))
+		if not name:
+			frappe.throw(_("No document found for given filters"))
+
+	doc = frappe.get_doc(doctype, name)
+	if not doc.has_permission("read"):
+		raise frappe.PermissionError
+    
+	return frappe.get_doc(doctype, name).as_dict()
 
 

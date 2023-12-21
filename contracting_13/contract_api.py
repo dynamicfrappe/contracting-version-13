@@ -2,7 +2,7 @@
 import frappe
 from frappe import _
 from frappe.model.mapper import get_mapped_doc
-
+from frappe.utils import add_days, cint, cstr, flt, formatdate, get_link_to_form, getdate, nowdate
 import json
 import datetime
 import pandas as pd 
@@ -56,6 +56,10 @@ def create_comparision(source_name, target_doc=None, ignore_permissions=True):
 	return docs
 @frappe.whitelist()
 def create_quotation(source_name, target_doc=None, ignore_permissions=True):
+	def update_item(source_doc, target_doc, source_parent):
+		target_doc.rate_demo = flt(source_doc.price) 
+		target_doc.rate = flt(source_doc.price) 
+		target_doc.set_onload("ignore_price_list", True)
 	docs = get_mapped_doc(
 			"Comparison",
 			source_name,
@@ -73,20 +77,22 @@ def create_quotation(source_name, target_doc=None, ignore_permissions=True):
 						"docstatus": ["=", 1],
 					},
 				},
-			# 	"Comparison Item": {
-			# 	"doctype": "Quotation Item",
-			# 	"field_map": {
-			# 		"clearance_item":"item_code",
-			# 		"clearance_item_name":"item_name",
-			# 		"clearance_item_description":"description",
-			# 		"uom": "uom",
-			# 		"qty": "qty",
-			# 		"price":"rate",
-			# 		# "total_price":"amount",
-			# 		"cost_center": "cost_center",
-			# 		"build": "build",
-			# 	},
-			# },
+			
+				"Comparison Item": {
+				"doctype": "Quotation Item",
+				"field_map": {
+					"clearance_item":"item_code",
+					"clearance_item_name":"item_name",
+					"clearance_item_description":"description",
+					"uom": "uom",
+					"qty": "qty",
+					# "price":"rate",
+					# "total_price":"amount",
+					"cost_center": "cost_center",
+					"build": "build",
+				},
+				"postprocess": update_item,
+			},
 			"Purchase Taxes and Charges Clearances": {
 				"doctype": "Sales Taxes and Charges",
 				"field_map": {
@@ -107,22 +113,13 @@ def create_quotation(source_name, target_doc=None, ignore_permissions=True):
 	source_doc = frappe.get_doc("Comparison", source_name)
 	#get items
 	for row in source_doc.item:
-		docs.append("items" , {
-					"item_code" : row.clearance_item ,
-					"item_name" : row.clearance_item_name ,
-					"description" : row.clearance_item_description,
-					'uom' :row.uom ,
-					"qty" : row.qty ,
-					"rate" : row.price ,
-					"cost_center" : row.cost_center ,
-					"build" : row.build
-		})
+	
 		print(f"Row---- {row.clearance_item_name}  --- {row.total_price} -- {row.price}")
 		#get item card
 		item_card_name = frappe.db.get_value('Comparison Item Card',{'comparison':row.parent,'item_code':row.clearance_item},['name'] )
 		if item_card_name:
 			item_card_doc = frappe.get_doc('Comparison Item Card', item_card_name)
-		# frappe.errprint(f'item_card-->{item_card_name}')
+		
 		#get child item and services for item
 			if item_card_doc.items:
 				for item in item_card_doc.items:
@@ -230,3 +227,56 @@ def validate_item_code(item_code) :
         return item_code
     else :
         frappe.msgprint(_(f""" Item Code Erro {item_code}"""))
+	
+
+
+
+
+@frappe.whitelist()
+def make_sales_order(source_name, target_doc=None, ignore_permissions=False):
+	
+	def postprocess(source, target):
+		project = source.project
+		# target.total_taxes_and_charges = source.purchase_taxes_and_charges_template
+		cost_center = frappe.db.get_value('Project',project,'cost_center')
+		target.cost_center = cost_center
+		set_missing_values(source, target)
+	
+
+	def set_missing_values(source, target):
+		target.ignore_pricing_rule = 1
+		target.flags.ignore_permissions = True
+		target.run_method("set_missing_values")
+		target.run_method("calculate_taxes_and_totals")
+		target.update({'customer': source.customer})
+		target.update({'is_contracting': 1})
+	comparison = frappe.get_doc("Quotation" ,source_name )
+	doclist = get_mapped_doc("Comparison", comparison.comparison, {
+		"Comparison": {
+			"doctype": "Sales Order",
+			# "field_map": {
+			# 	"customer": "customer",
+			# },
+		},
+		"Comparison Item": {
+			"doctype": "Sales Order Item",
+			"field_map": {
+				"name": "sales_order_item",
+				"parent": "sales_order",
+				"price":"rate",
+				"clearance_item":"item_code"
+			},
+			"add_if_empty": True
+		},
+		"Purchase Taxes and Charges Clearances": {
+			"doctype": "Sales Taxes and Charges",
+			"field_map": {
+				"name": "taxes",
+				"parent": "sales_order"
+			},
+			"add_if_empty": True
+
+		},
+	}, target_doc,postprocess, ignore_permissions=ignore_permissions)
+
+	return doclist

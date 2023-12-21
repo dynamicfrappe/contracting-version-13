@@ -509,13 +509,21 @@ frappe.ui.form.on("Comparison", {
     }
   },
   purchase_taxes_and_charges_template: (frm) => {
-    let tax_temp = frm.doc.purchase_taxes_and_charges_template;
-    if (tax_temp != null) {
+    frm.clear_table("taxes")
+    if (frm.doc.purchase_taxes_and_charges_template) {
+      let tax_temp = frm.doc.taxes_type;
+      let doc_type=''
+      if (tax_temp=="Purchase Taxes and Charges Template"){
+        doc_type = "Purchase Taxes and Charges Template"
+      }
+      else{
+        doc_type = 'Sales Taxes and Charges Template'
+      }
       frappe.call({
-        method: "frappe.client.get",
+        method: "contracting_13.contracting_13.doctype.comparison.comparison.get",
         args: {
-          doctype: "Purchase Taxes and Charges Template",
-          name: tax_temp,
+          doctype: doc_type ,
+          name: frm.doc.purchase_taxes_and_charges_template,
         },
         callback: function (r) {
           if (r.message) {

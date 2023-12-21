@@ -37,24 +37,28 @@ def create_tasks_from_sales_order(source_name):
                 frappe.msgprint(_("{} {} was created.").format(_(task.doctype),lnk))
                 tasks.append(task)
         if not tender:
-            task = frappe.new_doc("Task")
-            task.project = so.project
-            task.comparison = so.comparison
-            task.tender = comparison.tender or ''
-            task.sales_order = source_name
-            task.subject = f""" {item.qty} {item.item_code}:{item.item_name}"""
-            task.description = f""" {item.qty} {item.item_code}:{item.item_name}"""
-            task.set("items",[])
-            task.append("items",{
-                "item_code":item.item_code,
-                "item_name":item.item_name,
-                "description":item.description,
-                "uom":item.uom,
-                "qty":item.qty,
-            })
-            
-            task.save()
-            lnk = get_link_to_form(task.doctype,task.name)
-            frappe.msgprint(_("{} {} was created.").format(_(task.doctype),lnk))
-            tasks.append(task)
+         
+
+            for state in comparison.clearance_states :
+                task = frappe.new_doc("Task")
+                task.project = so.project
+                task.comparison = so.comparison
+                task.tender = comparison.tender or ''
+                task.sales_order = source_name
+                task.subject = f"""{state.state} {item.qty} {item.item_code}:{item.item_name}"""
+                task.description = f"""{state.state} {item.qty} {item.item_code}:{item.item_name}"""
+                task.set("items",[])
+                task.append("items",{
+                    "item_code":item.item_code,
+                    "item_name":item.item_name,
+                    "description":item.description,
+                    "state":state.state,
+                    "uom":item.uom,
+                    "qty":item.qty,
+                })
+
+                task.save()
+                lnk = get_link_to_form(task.doctype,task.name)
+                frappe.msgprint(_("{} {} was created.").format(_(task.doctype),lnk))
+                tasks.append(task)
     return tasks

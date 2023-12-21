@@ -189,7 +189,9 @@ user_data_fields = [
 
 
 override_doctype_class = {
-	"Stock Entry": "contracting_13.controllers.custom_stock_entry.customStockEntry"
+	"Stock Entry": "contracting_13.controllers.custom_stock_entry.customStockEntry" ,
+    "Delivery Note": "contracting_13.controllers.custom_delivery_note.CustomDeliveryNote",
+	"Sales Invoice": "contracting_13.controllers.custom_sales_invoice.CustomSalesInvoice",
 }
 
 
@@ -201,7 +203,7 @@ doctype_js = {
 	"Sales Invoice" : "public/js/sales_invoice.js" ,
 	"Payment Entry" : "public/js/payment_entry.js" ,
 	"Purchase Invoice" : "public/js/purchase_invoice.js" ,
-	"Task" : "contracting/doctype/task/task.js" ,
+	"Task" : "contracting_13/doctype/task/task.js" ,
 	"Stock Entry" : "public/js/stock_entry.js",
 	"Quotation" : "public/js/quotation.js",
 	"Material Request" :"public/js/material_request.js",
@@ -237,6 +239,9 @@ doc_events = {
 		} ,
 		"Sales Order" : {
 			"validate": "contracting_13.contracting_13.doctype.stock_entry.stock_entry.update_project_cost"
+		} ,
+         "Quotation" : {
+			"validate": "contracting_13.controllers.quotation.validate_quotation"
 		} ,
 		"Purchase Order": {
 		"on_submit": "contracting_13.contracting_13.doctype.purchase_order.purchase_order.update_comparison",
