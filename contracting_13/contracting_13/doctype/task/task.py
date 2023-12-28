@@ -2,6 +2,30 @@ import frappe
 from frappe import _
 from frappe.utils.data import get_link_to_form
 
+
+
+
+def get_current_item_state_qty(comparison , item  , state  ,qty):
+    """
+    params : 
+        comparison : local Comparison name - > String 
+        item       : comparison item name  -> string 
+        state      : current task state 
+    return remaining qty in current state
+    """
+    remaining_qty = qty
+
+    #caculate _perivies clerence with same state qty 
+    sql = frappe.db.sql(f""" SELECT SUM(a.current_qty) as qty FROM `tabClearance Items` a 
+                            INNER JOIN `tabClearance` b 
+                            on a.parent = b.name  
+                            WHERE b.comparison ='{comparison}'  
+                            AND a.clearance_item = '{item}'  AND a.clearance_state ='{state}'	""" ,as_dict=1)
+    
+    print(f"++++++++++    {sql}   ++++++++++++")
+    if sql and len(sql) > 0 :
+        remaining_qty = remaining_qty - float(sql[0].get("qty") or 0) 
+    return remaining_qty
 @frappe.whitelist()
 def create_tasks_from_sales_order(source_name):
     so = frappe.get_doc("Sales Order" , source_name)
@@ -29,7 +53,7 @@ def create_tasks_from_sales_order(source_name):
                     "description":item.description,
                     "state":state.state,
                     "uom":item.uom,
-                    "qty":item.qty,
+                    "qty": get_current_item_state_qty(so.comparison , item.item_code,state.state ) ,
                 })
                 
                 task.save()
@@ -54,7 +78,7 @@ def create_tasks_from_sales_order(source_name):
                     "description":item.description,
                     "state":state.state,
                     "uom":item.uom,
-                    "qty":item.qty,
+                     "qty": get_current_item_state_qty(so.comparison , item.item_code,state.state ,item.qty ) ,
                 })
 
                 task.save()

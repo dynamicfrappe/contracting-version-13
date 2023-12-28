@@ -11,7 +11,6 @@ from frappe import _
 from frappe.model.document import Document
 from erpnext.buying.doctype.purchase_order.purchase_order import make_purchase_invoice
 from erpnext.selling.doctype.sales_order.sales_order import SalesOrder, make_sales_invoice
-
 from frappe.contacts.doctype.address.address import get_company_address
 from frappe.model.utils import get_fetch_values
 from erpnext.stock.doctype.item.item import get_item_defaults
@@ -33,6 +32,26 @@ from frappe.utils.data import now_datetime
 
 
 class Clearance(Document):
+
+	"""
+	##### Refactor #####
+		Totals Section 
+		Total QTY    total qty of clearance items 
+		Total Insurances  Total Insurances Amount for current Clearance (insurance table)
+		Total Deductions	 Sum of all deductions from deduction table 
+		Total Item Prices Without Apply any deductions , insurance and taxes 
+		tax total Sum all of taxes amount 
+		grand total total of clearance after apply deductions , insurance and add taxes  
+		
+	class Main methods 
+
+	  validate method -- calculate  absolute values (totals /taxes /deductions /insurances )
+	  process -- > 
+				calculate item totals in item table  set value in total finished amount Field 
+				value set in calculate_totals
+	
+	
+	"""
 	def on_submit(self):
 		self.update_comparison_tender()
 		self.update_purchase_order()
@@ -44,41 +63,50 @@ class Clearance(Document):
 			self.cancel_sub_clearances()
 
 
-	def caculate_totals(self) :
+	def calculate_totals(self) :
+
+		# calculate taxes 
+		total_finished_amount = 0 
 		total_price = 0 
 		total_after_tax = 0 
 		if self.items :
-			for clearence_item in self.items :
+			for clearance_item in self.items :
 				doc = frappe.get_doc("Comparison", self.comparison)
-				#caculate item total _amount 
-				# 1- get cuarrent percent 
 				result = frappe.db.sql(f"""SELECT  percent as state_percent from `tabTender States Template` 
 						  WHERE  parent ='{self.comparison}'  
-						  and  state = '{clearence_item.clearance_state}'""" , as_dict=1)
+						  and  state = '{clearance_item.clearance_state}'""" , as_dict=1)
 				state_percent = 100 
 				if result :
 					state_percent = result[-1].get("state_percent") or 100
-					
-					print(state_percent)
-				clearence_item.state_percent = state_percent
-				clearence_item.total_price = (float(clearence_item.price or 0 ) * (float(state_percent or 0 ) / 100 )) * clearence_item.current_qty
-				total_price = total_price + float(clearence_item.total_price or 0)
-				total_after_tax = clearence_item.total_price  + total_after_tax
+				clearance_item.state_percent = state_percent
+				clearance_item.total_price = (float(clearance_item.price or 0 ) * 
+				  (float(state_percent or 0 ) / 100 )) * clearance_item.current_qty
+				total_price = total_price + float(clearance_item.total_price or 0)
+				total_after_tax = clearance_item.total_price  + total_after_tax
+		self.total_finished_amount = total_after_tax
 		self.total_after_tax = total_after_tax
 		self.total_price = total_price
 		self.total = total_price
+	def calculate_deductions(self):
+		total_deductions = 0
+		for deduction in self.deductions :
+			total_deductions += float(deduction.amount or 0)
+		self.total_deductions = total_deductions
+		self.total = self.total - float(self.total_deductions)
 	def validate(self) :
 		total_price = 0 
 		total_after_tax = 0 
-		self.caculate_totals()
+		self.calculate_totals()
+		self.calculate_deductions()
 		self.calculate_insurance()	
-
 		if self.item_tax :
+			self.total_after_tax = self.total
 			for  i in  self.item_tax :
-				i.tax_amount  = (i.rate /100) * self.total
-				i.total = i.tax_amount  + self.total
-				self.total_after_tax = self.total  + i.tax_amount
-
+				i.tax_amount  = (i.rate /100) * self.total_after_tax
+				i.total = i.tax_amount  +self.total_after_tax
+				self.total_after_tax = self.total_after_tax + i.tax_amount
+		self.tax_total = self.total_after_tax - self.total
+		self.grand_total = (self.total_after_tax) -float(self.total_insurances or 0 )
 	def save(self):
 		super(Clearance,self).save()
 		if self.is_grand_clearance :
@@ -111,7 +139,7 @@ class Clearance(Document):
 				row.bank_guarantee = item.bank_guarantee
 				row.bank = item.bank
 				self.total_insurances += row.amount
-			print(f'\n\n\n===>{self.total_insurances}\n\n')
+			
 
 
 			
@@ -157,7 +185,6 @@ class Clearance(Document):
 						# je.docstatus = 1
 						je.submit()
 						frappe.msgprint("Journal Entry '%s' Created Successfully"%lnk)
-
 						item.invocied = 1
 						item.save()
 						self.save()
@@ -230,44 +257,7 @@ class Clearance(Document):
 
 
 		
-	# def update_comparison(self):
-	#     if self.comparison and self.items and self.clearance_type == "Outcoming":
-	#         doc = frappe.get_doc("Comparison", self.comparison)
-	#         for clearence_item in self.items:
-	#             for comparison_item in doc.item:
-	#                 if clearence_item.clearance_item == comparison_item.clearance_item:
-	#                     # set previous qty and completed qty in clearence
-	#                     clearence_item.previous_qty = comparison_item.completed_qty
-	#                     clearence_item.completed_qty = clearence_item.current_qty + \
-	#                         clearence_item.previous_qty
-	#                     clearence_item.completed_percent = (float(
-	#                         clearence_item.completed_qty) / float(clearence_item.qty)) * 100 if clearence_item.qty else 0
-	#                     clearence_item.previous_percent = (float(
-	#                         clearence_item.previous_qty) / float(clearence_item.qty)) * 100 if clearence_item.qty else 0
-	#                     clearence_item.previous_amount = float(
-	#                         clearence_item.previous_qty) * float(clearence_item.price)
 
-	#                     # update comparison
-	#                     comparison_item.completed_qty += clearence_item.current_qty
-	#                     comparison_item.completed_percent = (
-	#                         comparison_item.completed_qty / clearence_item.qty) * 100 if clearence_item.qty else 0
-	#                     comparison_item.remaining_qty = clearence_item.qty - comparison_item.completed_qty
-	#                     comparison_item.remaining_percent = (
-	#                         comparison_item.remaining_qty / comparison_item.qty) * 100
-	#                     comparison_item.remaining_amount = float(
-	#                         comparison_item.remaining_qty) * float(clearence_item.price)
-
-	#                     # update remaining in clearence
-	#                     clearence_item.remaining_qty = clearence_item.qty - comparison_item.completed_qty
-	#                     clearence_item.remaining_percent = (
-	#                         comparison_item.remaining_qty / comparison_item.qty) * 100
-	#                     clearence_item.remaining_amount = float(
-	#                         comparison_item.remaining_qty) * float(clearence_item.price)
-
-	#         self.save()
-	#         doc.save()
-	#     else:
-	#         pass
 
 
 	def update_comparison_tender(self):
@@ -562,11 +552,10 @@ class Clearance(Document):
 		if len(self.insurances) > 0 :
 			for i in self.insurances :
 				if int(i.precent or 0) > 0  :
-					#calculate amount 
 					i.amount = float(self.total_price) * (float(i.precent) /100)
 					total_insurance  = total_insurance + i.amount
 		self.total_insurances = total_insurance
-		self.total = self.total_price - self.total_insurances
+		# self.total = self.total_price  
 
 
 @frappe.whitelist()
@@ -696,18 +685,31 @@ def clearance_make_sales_invoice(source_name, target_doc=None):
 	return invoice
 
 
-
 @frappe.whitelist()
-def create_grand_clearance(source_name, target_doc=None, ignore_permissions=False):
+def create_grand_clearance_from_sales_order(*args , **kwargs) :
+	return get_grand_clearance(args[0])
+@frappe.whitelist()
+def create_grand_clearance_from_comparison(*args , **kwargs) :
+	sales_order = frappe.db.get_value("Sales Order" ,{"comparison" : args[0]} ,"name")
+	return get_grand_clearance(sales_order)
+@frappe.whitelist()
+def get_grand_clearance(source_name, target_doc=None, ignore_permissions=False):
+	
 	comparison_name = frappe.db.get_value("Sales Order",source_name,"comparison")
 	comparison = frappe.get_doc("Comparison",comparison_name)
-	sql = f"""
-		select name from tabClearance tc 
-		where name not in (select clearance from `tabSales Invoice` si where si.docstatus < 2 and IFNULL(si.clearance,'')<>'')
-				and tc.docstatus =1  and clearance_type = 'Outcoming' 
-				and is_sub_clearance <> 1
-				and is_grand_clearance <> 1
-				and comparison = '{comparison.name}'
+	# sql = f"""
+	# 	select name from tabClearance tc 
+	# 	where name not in (select clearance from `tabSales Invoice` si where si.docstatus < 2 and IFNULL(si.clearance,'')<>'')
+	# 			and tc.docstatus =1  and clearance_type = 'Outcoming' 
+	# 			and is_sub_clearance <> 1
+	# 			and is_grand_clearance <> 1
+	# 			and comparison = '{comparison.name}'
+	# """
+
+	sql = f""" 
+	SELECT name From tabClearance  
+	WHERE status ='Waiting For Approve' and docstatus = 1 and invoiced=0 and paid=0 
+	and comparison = '{comparison.name}'
 	"""
 	un_invoiced_clearance = frappe.db.sql_list(sql) or []
 	if not len(un_invoiced_clearance):
@@ -795,8 +797,6 @@ def create_grand_clearance(source_name, target_doc=None, ignore_permissions=Fals
 		clearance.append("sub_clearance_details",{
 			"clearance":row
 		})
-
-	
 	return clearance
 
 

@@ -14,6 +14,7 @@
   "column_break_3",
   "tender",
   "comparison",
+  "project",
   "qty",
   "stock_item_section",
   "price_list",
@@ -36,7 +37,8 @@
   "result",
   "qty_from_comparison",
   "margin_percent",
-  "margin_rate"
+  "margin_rate",
+  "total_with_margin"
  ],
  "fields": [
   {
@@ -136,6 +138,7 @@
    "label": "Total Section "
   },
   {
+   "allow_on_submit": 1,
    "fieldname": "item_cost",
    "fieldtype": "Currency",
    "label": "Item Cost",
@@ -158,6 +161,7 @@
    "fieldtype": "Column Break"
   },
   {
+   "allow_on_submit": 1,
    "fieldname": "total_item_cost",
    "fieldtype": "Currency",
    "label": "Total Item Cost",
@@ -187,6 +191,7 @@
    "label": "Qty"
   },
   {
+   "allow_on_submit": 1,
    "fieldname": "result",
    "fieldtype": "Currency",
    "label": "Result",
@@ -201,26 +206,43 @@
    "read_only": 1
   },
   {
+   "allow_on_submit": 1,
    "fieldname": "margin_percent",
    "fieldtype": "Percent",
    "label": "Margin Percent"
   },
   {
+   "allow_on_submit": 1,
    "fieldname": "margin_rate",
    "fieldtype": "Currency",
-   "label": "Margin rate"
+   "label": "Margin rate",
+   "read_only_depends_on": "eval:doc.docstatus== 0 ;"
   },
   {
    "fieldname": "price_list",
    "fieldtype": "Link",
    "label": "Price List",
    "options": "Price List"
+  },
+  {
+   "fetch_from": "comparison.project",
+   "fieldname": "project",
+   "fieldtype": "Link",
+   "label": "Project",
+   "options": "Project"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "total_with_margin",
+   "fieldtype": "Currency",
+   "label": "Total With Margin",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2023-11-28 11:57:41.321628",
+ "modified": "2023-12-24 13:54:49.081035",
  "modified_by": "Administrator",
  "module": "Contracting 13",
  "name": "Comparison Item Card",

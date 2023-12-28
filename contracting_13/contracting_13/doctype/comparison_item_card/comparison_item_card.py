@@ -33,25 +33,17 @@ class ComparisonItemCard(Document):
 				if item.clearance_item == self.item_code:
 					if self.margin_percent and self.margin_percent > 0 :
 						self.margin_rate = ( float(self.result) * (float(self.margin_percent or 0) /100))
-						# self.result = float(self.result) +  foat(self.margin_rate)
-					# item.item_cost = self.result
-					# item.price = self.result + float(self.margin_rate  or 0 )
-					# item.total_price = item.price * item.qty
 					item.db_set('item_cost',self.result)
 					if float(self.result or 0) > 0 : 
-							
+
 						item.db_set('price',self.result + float(self.margin_rate  or 0 ))
 						item.db_set('total_price',item.price * item.qty)
 					frappe.db.commit()
-					# print(f""" 
-					# 'item_cost',{self.result} \n
-					# 	'price',self.result + {float(self.margin_rate  or 0 )} \n
-					# 	 'total_price',{item.price * item.qty}
-					# """)
+				
 	def validate(self):
 		self.validate_qty()
 		self.calcualte_profit()
-		
+		self.update_sales_price_on_submit()
 	def validate_qty(self):
 		if not self.qty:
 			self.qty = 1
@@ -73,7 +65,43 @@ class ComparisonItemCard(Document):
 				return item_price.name
 		except :
 			item_price
+	def update_sales_price_on_submit(self) :
+		item_cost = 0 
+		"""
+		Update Raw Material Item Price 
+		"""
+		if float(self.margin_percent or 0) > 0 :
+			for item in self.items :
+				item.sales_price = (item.unit_price * (float(self.margin_percent or 0) / 100 )) + item.unit_price
+				item.total_sales = float(item.sales_price or 0) * float(item.qty or 0 )
+				item_cost += item.total_sales
+				
+			self.margin_rate = ((float(self.margin_percent or 0) / 100 ) * \
+		       float(self.total_item_cost or 0 ) )
 			
+			self.total_with_margin = float(self.margin_rate or 0) +  float(self.total_item_cost or 0 ) 
+			
+
+	@frappe.whitelist()
+	def update_sales_price(self) :
+		item_cost = 0 
+		"""
+		Update Raw Material Item Price 
+		"""
+		if float(self.margin_percent or 0) > 0 :
+			for item in self.items :
+				item.sales_price = (item.unit_price * (float(self.margin_percent or 0) / 100 )) + item.unit_price
+				item.total_sales = float(item.sales_price or 0) * float(item.qty or 0 )
+				item_cost += item.total_sales
+				
+				# if self.docstatus == 1 :
+				# 	self.save()
+			self.margin_rate = ((float(self.margin_percent or 0) / 100 ) * \
+		       float(self.total_item_cost or 0 ) )
+			
+			self.total_with_margin = float(self.margin_rate or 0) +  float(self.total_item_cost or 0 ) 
+			if self.docstatus == 1 :
+					self.save()
 
 @frappe.whitelist()
 def get_item_details_test(args):

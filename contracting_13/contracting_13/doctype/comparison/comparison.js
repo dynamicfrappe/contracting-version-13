@@ -44,6 +44,7 @@ frappe.ui.form.on("Comparison", {
     });
   },
   refresh: (frm) => {
+    frm.events.setup_function(frm)
     if (frm.doc.docstatus == 1) {
       frm.events.add_custom_btn_event(frm)
       frm.add_custom_button(
@@ -58,6 +59,22 @@ frappe.ui.form.on("Comparison", {
         },
         __("Create")
       );
+
+      frm.add_custom_button(
+        __("Grand Clearance"),
+        function () {
+         
+          frappe.model.open_mapped_doc({
+            method:
+              "contracting_13.contracting_13.doctype.clearance.clearance.create_grand_clearance_from_comparison",
+            frm: frm,
+          });
+          //frm.events.make_purchase_order(frm);
+        },
+        __("Create")
+      );
+  
+    
       frm.add_custom_button(
         __("Purchase Order"),
         function () {
@@ -66,7 +83,7 @@ frappe.ui.form.on("Comparison", {
         __("Create")
       );
       //if (frm.doc.insurance_payment == 0) {
-
+      
       let can_create = frm.doc.insurances.some(
         (item) =>
           !item.invocied &&
@@ -207,6 +224,27 @@ frappe.ui.form.on("Comparison", {
     }
     
   },
+  setup_function: function(frm) {
+  
+    if (frm.doc.docstatus == 0) {
+        
+        frm.add_custom_button(
+          __("Update Price"),
+          function () {
+            //console.log("fom s order")
+            frappe.call(
+                {
+                    "method" :"update_prices_from_item_card" ,
+                    "doc"    : frm.doc,
+                    
+                }
+            )
+          
+          },
+          __("Update")
+        );
+    }
+},
   add_custom_btn_event:function(frm){
     frm.add_custom_button(
       __("Make Quotation"),

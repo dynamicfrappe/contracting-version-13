@@ -13,8 +13,30 @@ frappe.ui.form.on('Comparison Item Card', {
     refresh: function(frm) {
         frm.events.setup_quiries(frm)
         frm.events.upload_download_data(frm)
+        frm.events.setup_function(frm)
         
 	},
+    setup_function: function(frm) {
+        console.log("Setup")
+        if (frm.doc.docstatus == 1) {
+            
+            frm.add_custom_button(
+              __("Update Price"),
+              function () {
+                //console.log("fom s order")
+                frappe.call(
+                    {
+                        "method" :"update_sales_price" ,
+                        "doc"    : frm.doc,
+                        
+                    }
+                )
+              
+              },
+              __("Update")
+            );
+        }
+    },
     upload_download_data:function(frm){
         //download_data
         frm.fields_dict["items"].grid.add_custom_button(

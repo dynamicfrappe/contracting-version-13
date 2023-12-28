@@ -58,7 +58,9 @@ def create_comparision(source_name, target_doc=None, ignore_permissions=True):
 def create_quotation(source_name, target_doc=None, ignore_permissions=True):
 	def update_item(source_doc, target_doc, source_parent):
 		target_doc.rate_demo = flt(source_doc.price) 
+		print("A" ,  flt(source_doc.price)  )
 		target_doc.rate = flt(source_doc.price) 
+		print("B" , flt(source_doc.price) )
 		target_doc.set_onload("ignore_price_list", True)
 	docs = get_mapped_doc(
 			"Comparison",
@@ -86,8 +88,8 @@ def create_quotation(source_name, target_doc=None, ignore_permissions=True):
 					"clearance_item_description":"description",
 					"uom": "uom",
 					"qty": "qty",
-					# "price":"rate",
-					# "total_price":"amount",
+					"price":"rate",
+					"total_price":"amount",
 					"cost_center": "cost_center",
 					"build": "build",
 				},
@@ -105,7 +107,7 @@ def create_quotation(source_name, target_doc=None, ignore_permissions=True):
 			},
 			},
 			target_doc,
-			postprocess=None,
+			 postprocess=None,
 			ignore_permissions=ignore_permissions,
 		)
 	# frappe.errprint(f'docs-->{docs.__dict__}')
@@ -128,7 +130,11 @@ def create_quotation(source_name, target_doc=None, ignore_permissions=True):
 						'item_name':item.get("item_name"),
 						'qty':item.get('qty'),
 						'uom':item.get("uom"),
+						"unit_price" :float(item.get("sales_price") or 0 )
+						 				 if float(item.get("sales_price") or 0 ) > 0 
+						 				 else item.get("unit_price"),
 						'reference_item':row.clearance_item,
+						'comparison' : source_name
 					})
 			if item_card_doc.services:
 				for serv in item_card_doc.services:
@@ -137,7 +143,9 @@ def create_quotation(source_name, target_doc=None, ignore_permissions=True):
 						'item_name':serv.get("item_name"),
 						'qty':serv.get('qty'),
 						'uom':serv.get("uom"),
+						"unit_price" : serv.get("unit_price"),
 						'reference_item':row.clearance_item,
+						'comparison' : source_name
 					})
 	return docs
 

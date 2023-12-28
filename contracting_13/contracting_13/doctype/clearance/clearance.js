@@ -199,7 +199,12 @@ frappe.ui.form.on("Clearance", {
   },
   onload(frm) {
     if (frm.is_new()) {
+
+      // clear item withous state 
+
       (frm.doc.items || []).forEach((row) => {
+      
+        
         frm.events.get_item_price(frm, row.doctype, row.name);
 
         frm.events.calc_total(frm, row.doctype, row.name);

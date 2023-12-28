@@ -37,9 +37,13 @@ frappe.ui.form.on("Sales Order", {
     frm.add_custom_button(
       __("Grand Clearance"),
       function () {
+        console.log("Updated")
         frappe.model.open_mapped_doc({
           method:
-            "contracting_13.contracting_13.doctype.clearance.clearance.create_grand_clearance",
+            "contracting_13.contracting_13.doctype.clearance.clearance.create_grand_clearance_from_sales_order",
+          args:{
+              "type" :"Sales Order"
+          },
           frm: frm,
         });
         //frm.events.make_purchase_order(frm);

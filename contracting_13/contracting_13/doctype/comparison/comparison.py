@@ -50,6 +50,7 @@ class Comparison(Document):
 		doctype methods 
 		cost center controller 
 		calculate totals 
+		update sales prices from item card 
 	"""
 
 	#doctype methods 
@@ -146,7 +147,10 @@ class Comparison(Document):
 		self.expenses_insurances            = expense_insurances
 		self.payed_in_clearance_insurances  = payed_in_clearance_insurances
 		print(f""" A {self.expenses_insurances} -- B {self.payed_in_clearance_insurances}  """)
-		self.delevery_insurance_value_rate_  = (float(self.payed_in_clearance_insurances or 0)/ float(self.total_price or 0 )) * 100
+		try :
+			self.delevery_insurance_value_rate_  = (float(self.payed_in_clearance_insurances or 0)/ float(self.total_price or 0 )) * 100
+		except :
+			self.delevery_insurance_value_rate = 0
 		self.insurances_on_deleviery = payed_in_clearance_insurances
 
 
@@ -217,7 +221,17 @@ class Comparison(Document):
 		self.total = grand_total
 
 
-	
+	@frappe.whitelist()
+	def update_prices_from_item_card(self) :
+		for i in self.item :
+		# get item Card 
+			exists = frappe.db.exists("Comparison Item Card" , {"item_code" : i.clearance_item ,
+						"comparison" : self.name ,"docstatus" : 1 }  )
+			if exists :
+				item_card = frappe.get_doc("Comparison Item Card" , {"item_code" : i.clearance_item ,
+								"comparison" : self.name ,"docstatus" : 1 }  )
+				if item_card :
+					frappe.msgprint(str(item_card))
 
 
 

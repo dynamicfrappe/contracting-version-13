@@ -10,6 +10,7 @@
   "clearance_item_name",
   "clearance_item_description",
   "cost_center",
+  "income_account",
   "comparison_item_card",
   "allow_material_over_price",
   "column_break_4",
@@ -20,6 +21,10 @@
   "total_price",
   "item_cost",
   "total_item_cost",
+  "sales_order_status_section",
+  "oredred_qty",
+  "rm_sl_qty_cl_break",
+  "rm_sl_qty",
   "current",
   "current_percent",
   "column_break_12",
@@ -282,12 +287,40 @@
    "in_list_view": 1,
    "label": "Code",
    "options": "A\nB\nC"
+  },
+  {
+   "fieldname": "sales_order_status_section",
+   "fieldtype": "Section Break",
+   "label": "Sales Order Status"
+  },
+  {
+   "fieldname": "oredred_qty",
+   "fieldtype": "Float",
+   "label": "Oredred Qty",
+   "non_negative": 1
+  },
+  {
+   "fieldname": "rm_sl_qty_cl_break",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "rm_sl_qty",
+   "fieldtype": "Data",
+   "label": "Remaining Qty To Orderd",
+   "read_only_depends_on": "Remaining Qty To make Sales Order"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "income_account",
+   "fieldtype": "Link",
+   "label": "Income Account",
+   "options": "Account"
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2023-11-28 11:47:07.873296",
+ "modified": "2023-12-25 13:40:01.190999",
  "modified_by": "Administrator",
  "module": "Contracting 13",
  "name": "Comparison Item",

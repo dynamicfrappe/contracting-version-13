@@ -16,6 +16,7 @@
   "customer_name",
   "project",
   "contractor",
+  "income_account",
   "contractor_name",
   "allow_material_over_price",
   "date_section",
@@ -407,11 +408,18 @@
    "fieldtype": "Select",
    "label": "Taxes Types",
    "options": "Purchase Taxes and Charges Template\nSales Taxes and Charges Template"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "income_account",
+   "fieldtype": "Link",
+   "label": "Income Account",
+   "options": "Account"
   }
  ],
  "is_submittable": 1,
  "links": [],
- "modified": "2023-12-21 18:15:09.194919",
+ "modified": "2023-12-25 12:21:35.365151",
  "modified_by": "Administrator",
  "module": "Contracting 13",
  "name": "Comparison",
