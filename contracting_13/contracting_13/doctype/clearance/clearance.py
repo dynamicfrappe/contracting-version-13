@@ -29,6 +29,7 @@ from frappe.utils import (
     get_link_to_form
 )
 from frappe.utils.data import now_datetime
+from contracting_13.contracting_13.controllers.create_clearance_gl_entry import create_journal_entry_from_clearance
 
 
 class Clearance(Document):
@@ -50,13 +51,15 @@ class Clearance(Document):
 				calculate item totals in item table  set value in total finished amount Field 
 				value set in calculate_totals
 	
-	
+	On cancel method is not work 
 	"""
 	def on_submit(self):
 		self.update_comparison_tender()
 		self.update_purchase_order()
 		self.create_deduction_je()
-
+		# if clearance is grand clearance create GL entrys
+		if self.is_grand_clearance :
+			create_journal_entry_from_clearance(self)
 	def on_cancel(self):
 		self.update_purchase_order(cancel=1)
 		if self.is_grand_clearance :

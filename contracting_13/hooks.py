@@ -97,6 +97,7 @@ scheduler_events = {
 
 doc_events = {
 		"Stock Entry" : {
+			"validate" :"contracting_13.contracting_13.doctype.stock_entry.stock_entry.validate" ,
 			"on_submit": "contracting_13.contracting_13.doctype.stock_entry.stock_entry.on_submit"
 		} ,
 		"Sales Order" : {

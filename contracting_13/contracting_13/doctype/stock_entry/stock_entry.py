@@ -21,10 +21,36 @@ def get_item_query(doctype, txt, searchfield, start, page_len, filters):
                     and (item.name like '{search_txt}' or item.item_name like '{search_txt}' )""")
 
 
+
+
+def get_comparison_item_cost_center(comparison , item) :
+    cost_center =False 
+    sql_data = frappe.db.sql(f"""SELECT  cost_center FROM `tabComparison Item`  
+    WHERE clearance_item = '{item}' AND parent ='{comparison}' """ ,as_dict=True)
+    if sql_data and len(sql_data) > 0 : 
+        return sql_data[0].get("cost_center")
+    return cost_center
+
+@frappe.whitelist()
+def validate(self, *args , **kwars) :
+    if 'Contracting' in DOMAINS  :
+        if self.against_comparison :
+            comparison = frappe.get_doc("Comparison",self.comparison)
+            self.item = self.comparison_item
+            self.project = comparison.project
+
+            if self.comparison_item	:
+                for i in self.items :
+                   
+                    i.project = comparison.project
+                    if i.comparison_item :
+                        i.item = i.comparison_item
+                        i.cost_center = get_comparison_item_cost_center( self.comparison ,i.comparison_item )
 @frappe.whitelist()
 def on_submit(self,fun=''):
     if getattr(self,"against_comparison",False) :
         comparison = frappe.get_doc("Comparison",self.comparison)
+
         for item in getattr(self,"items",[]):
             comparison_item = [ x for x in getattr(comparison,"item",[]) if x.clearance_item == item.comparison_item ]
             if len(comparison_item) > 0:

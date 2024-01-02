@@ -2,6 +2,11 @@
 
 dynamic
 
+
+### Open Issue 
+clearance do not close -- child clearance 
+
+
 #### License
 
 Dynamic solution to Manage Contracting system 

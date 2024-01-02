@@ -274,6 +274,10 @@ def create_journal_entry_from_clearance(clearance , *args ,**kwargs) :
 
    journal_entry.save()
    frappe.db.commit()
+
+   journal_entry.docstatus =1 
+   journal_entry.save(ignore_permissions =True)
+   frappe.db.commit()
    return True
 
 #from create_clearence_gl_entry import create_journal_entry_from_clearance
