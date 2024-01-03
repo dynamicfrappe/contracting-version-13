@@ -47,6 +47,9 @@ we use project to manage raw material  and if we has any extra additional costs 
 For Every Comparison we create one sales order -- 
 from sales order we created tasks or clearance 
 
+sub clearance to set data 
+grand clearance to create GL 
+
 
 
 

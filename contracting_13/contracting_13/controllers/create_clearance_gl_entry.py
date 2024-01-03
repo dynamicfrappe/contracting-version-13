@@ -90,7 +90,7 @@ def create_journal_entry_from_clearance(clearance , *args ,**kwargs) :
       2- Cost Center
       3- Comparison Item 
    """
-   self = clearance
+   self  = clearance
    #get original comparison 
    comparison = frappe.get_doc("Comparison" ,self.comparison )
    customer = comparison.customer
@@ -270,14 +270,22 @@ def create_journal_entry_from_clearance(clearance , *args ,**kwargs) :
 
 
    
+   try :
 
+      journal_entry.save()
+      frappe.db.commit()
+      journal_entry.docstatus =1 
+      journal_entry.save(ignore_permissions =True)
+      frappe.db.commit()
+      return True
+   except Exception as E :
+      #create Error Log 
+      error_log= frappe.new_doc("Error Log")
+      error_log.method = "create_journal_entry_from_clearance"
+      error_log.error = str(E) if len(str(E)) < 120 else str(E)[0:120]
+      error_log.save()
+      frappe.throw(_("An error accorded please see error logs !"))
 
-   journal_entry.save()
-   frappe.db.commit()
-
-   journal_entry.docstatus =1 
-   journal_entry.save(ignore_permissions =True)
-   frappe.db.commit()
-   return True
+      return False
 
 #from create_clearence_gl_entry import create_journal_entry_from_clearance
