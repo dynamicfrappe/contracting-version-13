@@ -12,7 +12,7 @@ frappe.ui.form.on('Comparison Item Card', {
 	},
     refresh: function(frm) {
         frm.events.setup_quiries(frm)
-        frm.events.upload_download_data(frm)
+        // frm.events.upload_download_data(frm)
         frm.events.setup_function(frm)
         
 	},

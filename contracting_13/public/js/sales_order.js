@@ -2,6 +2,8 @@ frappe.ui.form.on("Sales Order", {
   setup: function (frm) {
   },
   refresh: function (frm) {
+    console.log("Hello 2")
+    frm.remove_custom_button('Sales Invoice' ,'Create' );
     frm.events.get_cost_centrt(frm)
     // frm.set_query("comparison", function () {
     //   return {
@@ -33,25 +35,43 @@ frappe.ui.form.on("Sales Order", {
       },
       __("Create")
     );
+  // check if  un invoiced clearance 
 
-    frm.add_custom_button(
-      __("Grand Clearance"),
-      function () {
-       
-        frappe.model.open_mapped_doc({
-          method:
-            "contracting_13.contracting_13.doctype.clearance.clearance.create_grand_clearance_from_sales_order",
-          frm: frm,
-        });
-        //frm.events.make_purchase_order(frm);
-      },
-      __("Create")
-    );
+  frappe.call({
+    method: "contracting_13.contracting_13.controllers.sales_order.get_un_invoice_clearance" ,
+    "args" : {"comparison" : frm.doc.comparison} ,
+    callback:function(r){
+     if (r.message ) {
+      var clearances = r.message
+      console.log(clearances)
+      if (clearances > 0 ) {
+
+        frm.add_custom_button(
+          __("Grand Clearance"),
+          function () {
+           
+            frappe.model.open_mapped_doc({
+              method:
+                "contracting_13.contracting_13.doctype.clearance.clearance.create_grand_clearance_from_sales_order",
+              frm: frm,
+            });
+            //frm.events.make_purchase_order(frm);
+          },
+          __("Create")
+        );
+
+      }
+     }
+    }
+  })
+    
 
     }
   },
   onload: function (frm) {
-    console.log("over Write ");
+   
+    console.log("Hello ")
+    frm.remove_custom_button('Sales Invoice' ,'Create' );
   },
   comparison: function (frm) {
     console.log("com");

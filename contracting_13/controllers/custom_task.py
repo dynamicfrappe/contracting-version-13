@@ -39,8 +39,14 @@ class customTask(Task) :
       
    def __init__(self, *args , **kwargs) :
       return super(customTask , self).__init__(*args , **kwargs)
+   
+   def validate_negative_qty(self) :
+      for item in self.items :
+         if float(item.qty) <= 0  and self.status == "Completed":
+               frappe.throw(_("Can not create Task with negative amount"))
    def validate(self) :
       if self.comparison :
+         self.validate_negative_qty()
          for item in self.items :
             remaining_qty = self.get_comparison_item_remaining_qty(item.item_code ,item.state)
             if float(remaining_qty or 0) < float(item.qty) :

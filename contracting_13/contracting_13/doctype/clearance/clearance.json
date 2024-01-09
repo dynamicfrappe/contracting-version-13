@@ -466,12 +466,13 @@
    "fieldname": "againest_task",
    "fieldtype": "Link",
    "label": "Againest Task",
-   "options": "Task"
+   "options": "Task",
+   "read_only": 1
   }
  ],
  "is_submittable": 1,
  "links": [],
- "modified": "2024-01-09 18:01:22.643156",
+ "modified": "2024-01-09 18:03:44.858032",
  "modified_by": "Administrator",
  "module": "Contracting 13",
  "name": "Clearance",

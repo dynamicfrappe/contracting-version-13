@@ -61,6 +61,7 @@ class Clearance(Document):
 		if self.is_grand_clearance :
 			create_journal_entry_from_clearance(self)
 			self.update_sub_clearance_status()
+			self.status = "Invoice Clearance"
 	def on_cancel(self):
 		self.update_purchase_order(cancel=1)
 		if self.is_grand_clearance :

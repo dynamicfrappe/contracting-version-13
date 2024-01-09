@@ -123,8 +123,10 @@ def make_clearence(source_name, target_doc=None, ignore_permissions=False ,task_
 					row.clearance_state =	item.state
 
 		for raw in rm_list :
+
 			doclist.remove(raw)
-				
+	if task_name :
+		doclist.againest_task =task_name			
 	return doclist
 
 

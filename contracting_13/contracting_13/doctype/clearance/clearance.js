@@ -134,7 +134,7 @@ frappe.ui.form.on("Clearance", {
           },
         });
       }
-      if (frm.doc.clearance_type == "Outcoming" && !frm.doc.is_sub_clearance) {
+      if (frm.doc.clearance_type == "InComing" && !frm.doc.is_sub_clearance) {
         frm.call({
           method: "can_create_invoice",
           doc: frm.doc,

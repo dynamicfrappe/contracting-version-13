@@ -1,5 +1,6 @@
 frappe.ui.form.on("Purchase Order", {
   refresh(frm) {
+    
     frm.events.get_cost_centrt(frm)
     frm.set_query("comparison", function () {
       return {

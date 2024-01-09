@@ -61,19 +61,47 @@ frappe.ui.form.on("Comparison", {
       );
       }
       if (frm.doc.docstatus == 1){
-      frm.add_custom_button(
-        __("Grand Clearance"),
-        function () {
+
+        frappe.call({
+          method: "contracting_13.contracting_13.controllers.sales_order.get_un_invoice_clearance" ,
+          "args" : {"comparison" : frm.doc.name} ,
+          callback:function(r){
+           if (r.message ) {
+            var clearances = r.message
+            console.log(clearances)
+            if (clearances > 0 ) {
+      
+              frm.add_custom_button(
+                __("Grand Clearance"),
+                function () {
+                 
+                  frappe.model.open_mapped_doc({
+                    method:
+                      "contracting_13.contracting_13.doctype.clearance.clearance.create_grand_clearance_from_comparison",
+                    frm: frm,
+                  });
+                  //frm.events.make_purchase_order(frm);
+                },
+                __("Create")
+              );
+      
+            }
+           }
+          }
+        })
+      // frm.add_custom_button(
+      //   __("Grand Clearance"),
+      //   function () {
          
-          frappe.model.open_mapped_doc({
-            method:
-              "contracting_13.contracting_13.doctype.clearance.clearance.create_grand_clearance_from_comparison",
-            frm: frm,
-          });
-          //frm.events.make_purchase_order(frm);
-        },
-        __("Create")
-      );
+      //     frappe.model.open_mapped_doc({
+      //       method:
+      //         "contracting_13.contracting_13.doctype.clearance.clearance.create_grand_clearance_from_comparison",
+      //       frm: frm,
+      //     });
+      //     //frm.events.make_purchase_order(frm);
+      //   },
+      //   __("Create")
+      // );
   
     
       frm.add_custom_button(
