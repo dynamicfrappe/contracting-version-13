@@ -43,7 +43,7 @@ frappe.ui.form.on("Task", {
     };
   },
   refresh: function (frm) {
-    if (frm.doc.comparison && frm.doc.sales_order) {
+    if (frm.doc.comparison && frm.doc.sales_order  && frm.doc.status=="Completed") {
       frm.add_custom_button(
         __("Clearance"),
         function () {

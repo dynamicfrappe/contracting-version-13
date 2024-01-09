@@ -13,6 +13,7 @@
   "is_grand_clearance",
   "is_sub_clearance",
   "grand_clearance",
+  "againest_task",
   "status",
   "column_break_3",
   "clearance_date",
@@ -460,11 +461,17 @@
    "label": "Status",
    "options": "Waiting For Approve\nSent to customer\nInvoiced\nInvoice Clearance\nPaid\nPartially Paid\nRejected",
    "read_only": 1
+  },
+  {
+   "fieldname": "againest_task",
+   "fieldtype": "Link",
+   "label": "Againest Task",
+   "options": "Task"
   }
  ],
  "is_submittable": 1,
  "links": [],
- "modified": "2024-01-03 18:22:45.031986",
+ "modified": "2024-01-09 18:01:22.643156",
  "modified_by": "Administrator",
  "module": "Contracting 13",
  "name": "Clearance",
