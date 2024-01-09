@@ -54,6 +54,8 @@ override_doctype_class = {
 	"Stock Entry": "contracting_13.controllers.custom_stock_entry.customStockEntry" ,
     "Delivery Note": "contracting_13.controllers.custom_delivery_note.CustomDeliveryNote",
 	"Sales Invoice": "contracting_13.controllers.custom_sales_invoice.CustomSalesInvoice",
+   "Task" : "contracting_13.controllers.custom_task.customTask",
+   "Sales Order" : "contracting_13.contracting_13.doctype.sales_order.sales_order.SalesOrder"
 }
 
 

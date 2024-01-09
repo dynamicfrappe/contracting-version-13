@@ -33,5 +33,9 @@ def get_data():
 				'label': _('Journal Entry'),
 				'items': ['Journal Entry']
 			},
+			{
+				'label': _('Tasks'),
+				'items': ['Task']
+			},
 		]
 	}

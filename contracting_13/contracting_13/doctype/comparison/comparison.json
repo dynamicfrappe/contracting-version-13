@@ -11,10 +11,13 @@
   "company",
   "tender",
   "tender_status",
+  "status",
   "column_break_2",
   "customer",
   "customer_name",
   "project",
+  "cost_center",
+  "set_all_item_cost_center_as_project_cost_center",
   "contractor",
   "income_account",
   "contractor_name",
@@ -249,6 +252,7 @@
    "read_only": 1
   },
   {
+   "allow_on_submit": 1,
    "fieldname": "grand_total",
    "fieldtype": "Currency",
    "label": "Grand Total",
@@ -415,11 +419,37 @@
    "fieldtype": "Link",
    "label": "Income Account",
    "options": "Account"
+  },
+  {
+   "allow_on_submit": 1,
+   "fetch_from": "project.cost_center",
+   "fieldname": "cost_center",
+   "fieldtype": "Link",
+   "label": "Cost Center",
+   "options": "Cost Center"
+  },
+  {
+   "allow_on_submit": 1,
+   "default": "0",
+   "description": "If You check This All Items Cost Center Will be Same Like Project ",
+   "fieldname": "set_all_item_cost_center_as_project_cost_center",
+   "fieldtype": "Check",
+   "label": "Set All Item Cost Center As Project Cost Center"
+  },
+  {
+   "allow_on_submit": 1,
+   "default": "Waiting",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Status",
+   "options": "Waiting\nOrdered\nStarted\nClosed",
+   "read_only": 1
   }
  ],
  "is_submittable": 1,
  "links": [],
- "modified": "2023-12-25 12:21:35.365151",
+ "modified": "2024-01-03 19:35:28.015614",
  "modified_by": "Administrator",
  "module": "Contracting 13",
  "name": "Comparison",

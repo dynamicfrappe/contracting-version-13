@@ -5,6 +5,7 @@ dynamic
 
 ### Open Issue 
 clearance do not close -- child clearance 
+On Cancel clearance should update  perevios values in comparison 
 
 
 #### License

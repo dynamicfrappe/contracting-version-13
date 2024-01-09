@@ -458,12 +458,13 @@
    "fieldtype": "Select",
    "in_list_view": 1,
    "label": "Status",
-   "options": "Waiting For Approve\nSent to customer\nInvoiced\nInvoice Clearance\nPaid\nPartially Paid\nRejected"
+   "options": "Waiting For Approve\nSent to customer\nInvoiced\nInvoice Clearance\nPaid\nPartially Paid\nRejected",
+   "read_only": 1
   }
  ],
  "is_submittable": 1,
  "links": [],
- "modified": "2024-01-02 18:21:22.958310",
+ "modified": "2024-01-03 18:22:45.031986",
  "modified_by": "Administrator",
  "module": "Contracting 13",
  "name": "Clearance",

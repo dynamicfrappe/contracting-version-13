@@ -73,6 +73,7 @@
    "read_only": 1
   },
   {
+   "allow_on_submit": 1,
    "fieldname": "cost_center",
    "fieldtype": "Link",
    "label": "Cost Center",
@@ -320,7 +321,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2023-12-25 13:40:01.190999",
+ "modified": "2024-01-03 15:56:49.230076",
  "modified_by": "Administrator",
  "module": "Contracting 13",
  "name": "Comparison Item",

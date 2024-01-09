@@ -45,7 +45,7 @@ frappe.ui.form.on("Comparison", {
   },
   refresh: (frm) => {
     frm.events.setup_function(frm)
-    if (frm.doc.docstatus == 1) {
+    if (frm.doc.docstatus == 1 && frm.doc.status !="Ordered") {
       frm.events.add_custom_btn_event(frm)
       frm.add_custom_button(
         __("Sales Order"),
@@ -59,7 +59,8 @@ frappe.ui.form.on("Comparison", {
         },
         __("Create")
       );
-
+      }
+      if (frm.doc.docstatus == 1){
       frm.add_custom_button(
         __("Grand Clearance"),
         function () {

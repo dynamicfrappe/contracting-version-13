@@ -21,6 +21,11 @@ from six import string_types
 class Comparison(Document):
 
 	"""
+	status Waiting  -- After submit default status 
+			Ordered   -- when sales order created  
+			Started   -- after completed task or grand clearance
+			Completed -- After compete 100 % of all states 
+			Closed    -- Closed By user 
 	Comparison
 	Mapping Totals 
 	Document totals fields :
@@ -52,9 +57,50 @@ class Comparison(Document):
 		calculate totals 
 		update sales prices from item card 
 	"""
-
+	def get_current_task_or_clearance(self) :
+		error = 0
+		error_msg = ""
+		tasks = frappe.db.get_list('Task',
+			     filters ={
+				     'comparison' :self.name
+				  },
+				   fields=['name'] ,
+				   as_list = True
+			     )
+		clearances = frappe.db.get_list('Clearance',
+			     filters ={
+				     'comparison' :self.name
+				  },
+				   fields=['name'] ,
+				   as_list = True
+			     )
+		if len(tasks) > 0 :
+			error = 1
+			error_msg += f"Can Not Update Comparison {self.name} Coz It has Tasks Please delete tasks \n "
+			for task in tasks :
+				print(task)
+				error_msg += f" <h5> task {task[0]} </h5> "
+		if len(clearances) > 0 :
+			error = 1
+			error_msg += f"Can Not Update Comparison {self.name} Coz It has Clearance Please delete clearances \n "
+			for clearance in clearances :
+				error_msg += f" <h5> clearance {clearance[0]} </h5> "
+		if error ==1 :
+			frappe.throw(error_msg)
+	def on_update_after_submit(self):
+		# Project can changed until task or clearance created 
+		# if project changed and apply cost center change for all item 
+		old_project = frappe.get_doc("Comparison" , self.name).project
+		print(str(old_project) , self.project)
+		if old_project != self.project :
+			self.get_current_task_or_clearance()
+			if self.set_all_item_cost_center_as_project_cost_center == 1 :
+				for item in self.item :
+					item.cost_center = self.cost_center
+			
 	#doctype methods 
 	def validate(self):
+		self.validate_state()
 		self.validate_items()
 		self.set_required_fields()
 		self.calculate_total_item_cost()
@@ -116,7 +162,12 @@ class Comparison(Document):
 		self.total_amount = total_amount
 		self.total_qty = total_qty
 
-	
+	def validate_state(self) :
+		percent = 0
+		for state in self.clearance_states :
+			percent += float(state.percent)
+		if percent != 100 :
+			frappe.throw(_(f"Current State percent is {percent} it should be 100"))
 	def calculate_total_item_cost(self):
 		self.total_cost_amount = 0 
 		if self.item :

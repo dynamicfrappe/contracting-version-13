@@ -171,6 +171,7 @@ class SalesOrder(SellingController):
 				frappe.throw(_("Row #{0}: Set Supplier for item {1}").format(d.idx, d.item_code))
 
 	def on_submit(self):
+		self.update_comparison_status()
 		self.check_credit_limit()
 		self.update_reserved_qty()
 
@@ -179,12 +180,17 @@ class SalesOrder(SellingController):
 		self.update_prevdoc_status('submit')
 
 		self.update_blanket_order()
-
+	
+			
 		update_linked_doc(self.doctype, self.name, self.inter_company_order_reference)
 		if self.coupon_code:
 			from erpnext.accounts.doctype.pricing_rule.utils import update_coupon_code_count
 			update_coupon_code_count(self.coupon_code,'used')
-
+	def update_comparison_status(self) :
+		if self.comparison :
+			print("Update comparison ")
+			frappe.db.sql(f""" UPDATE `tabComparison` SET status ='Ordered'  WHERE name = '{self.comparison}'""")
+			frappe.db.commit()
 	def on_cancel(self):
 		self.ignore_linked_doctypes = ('GL Entry', 'Stock Ledger Entry')
 		super(SalesOrder, self).on_cancel()

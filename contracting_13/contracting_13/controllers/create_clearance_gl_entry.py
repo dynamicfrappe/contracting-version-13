@@ -73,7 +73,7 @@ def get_default_account(company , obj , obj_type ,comparison =None):
 
    
 
-#@frappe.white_list()
+@frappe.whitelist()
 def create_journal_entry_from_clearance(clearance , *args ,**kwargs) :
    """
    params : clearance  | clearance object 

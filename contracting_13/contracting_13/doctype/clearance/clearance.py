@@ -60,12 +60,19 @@ class Clearance(Document):
 		# if clearance is grand clearance create GL entrys
 		if self.is_grand_clearance :
 			create_journal_entry_from_clearance(self)
+			self.update_sub_clearance_status()
 	def on_cancel(self):
 		self.update_purchase_order(cancel=1)
 		if self.is_grand_clearance :
 			self.cancel_sub_clearances()
 
-
+	def update_sub_clearance_status(self) :
+		for clearance in self.sub_clearance_details :
+			frappe.db.sql(f""" 
+			UPDATE `tabClearance` set  invoiced = 1 , status= 'Invoiced'  WHERE name = '{clearance.clearance}'
+			
+			""")
+			frappe.db.commit()
 	def calculate_totals(self) :
 
 		# calculate taxes 
@@ -269,77 +276,73 @@ class Clearance(Document):
 			tender_doc = None
 			if doc.tender :
 				tender_doc = frappe.get_doc("Tender",doc.tender)
-			for clearence_item in self.items:
-				for comparison_item in doc.item:
-					if clearence_item.clearance_item == comparison_item.clearance_item:
+			if not  self.is_grand_clearance :
+				for clearence_item in self.items:
+					for comparison_item in doc.item:
+						if clearence_item.clearance_item == comparison_item.clearance_item:
 
 
-						# result = get_item_price(self.comparison,clearence_item.clearance_item,
-			      	# 			clearence_item.clearance_state,clearence_item.current_qty) or {}
-						result = frappe.db.sql(f"""SELECT  percent as state_percent from `tabTender States Template` 
-						  WHERE  parent ='{self.comparison}'  
-						  and  state = '{clearence_item.clearance_state}'""" , as_dict=1)
-						state_percent = 100 
-						if result :
-							state_percent = result[-1].get("state_percent") or 100
-                  
-						completed_percent =( float(state_percent or 0 )  * float(clearence_item.current_qty or 0))\
-							 			 /( comparison_item.qty or 1)
-						completed_amount = clearence_item.total_price
-						# frappe.msgprint(str(state_percent))
-						# frappe.throw(str(completed_percent))
+							# result = get_item_price(self.comparison,clearence_item.clearance_item,
+							# 			clearence_item.clearance_state,clearence_item.current_qty) or {}
+							result = frappe.db.sql(f"""SELECT  percent as state_percent from `tabTender States Template` 
+							WHERE  parent ='{self.comparison}'  
+							and  state = '{clearence_item.clearance_state}'""" , as_dict=1)
+							state_percent = 100 
+							if result :
+								state_percent = result[-1].get("state_percent") or 100
+							
+							completed_percent =( float(state_percent or 0 )  * float(clearence_item.current_qty or 0))\
+											/( comparison_item.qty or 1)
+							completed_amount = clearence_item.total_price
+							# frappe.msgprint(str(state_percent))
+							# frappe.throw(str(completed_percent))
 
-						comparison_item.previous_percent = float(completed_percent or  0) + float(completed_percent or 0)
-						comparison_item.previous_amount = float(completed_amount or  0 )\
-							  +float(comparison_item.previous_amount or 0)
+							comparison_item.previous_percent = float(completed_percent or  0)\
+											+ float(comparison_item.previous_percent or 0)
+							comparison_item.previous_amount = float(completed_amount or  0 )\
+								+float(comparison_item.previous_amount or 0)
 
-						comparison_item.completed_percent = (comparison_item.completed_percent or 0) + completed_percent 
-						comparison_item.completed_amount = (comparison_item.completed_amount or 0) + completed_amount
-
-
-
-						comparison_item.remaining_percent = 100- comparison_item.completed_percent 
-						comparison_item.remaining_amount = (comparison_item.total_price or 0) - comparison_item.completed_amount
-
-						
-
-						log = frappe.new_doc("Comparison Item Log")
-						log.posting_date = now_datetime()
-						log.state = clearence_item.clearance_state
-						log.state_percent = clearence_item.state_percent
-						log.item_code = clearence_item.clearance_item
-						log.item_name = clearence_item.clearance_item_name
-						log.description = clearence_item.clearance_item_description
-						log.uom = clearence_item.uom
-						log.qty = clearence_item.current_qty or 0
-						log.price = clearence_item.current_price or 0
-						log.comparison = doc.name
-						log.reference_type = self.doctype
-						log.reference_name = self.name
-						log.submit()
+							comparison_item.completed_percent = (comparison_item.completed_percent or 0) + completed_percent 
+							comparison_item.completed_amount = (comparison_item.completed_amount or 0) + completed_amount
 
 
 
-						clearence_item.previous_percent = log.previous_percent
-						clearence_item.previous_amount = log.previous_percent
-						clearence_item.previous_qty = log.pervious_qty
+							comparison_item.remaining_percent = 100- comparison_item.completed_percent 
+							comparison_item.remaining_amount = (comparison_item.total_price or 0) - comparison_item.completed_amount
+
+							
+
+							log = frappe.new_doc("Comparison Item Log")
+							log.posting_date = now_datetime()
+							log.state = clearence_item.clearance_state
+							log.state_percent = clearence_item.state_percent
+							log.item_code = clearence_item.clearance_item
+							log.item_name = clearence_item.clearance_item_name
+							log.description = clearence_item.clearance_item_description
+							log.uom = clearence_item.uom
+							log.qty = clearence_item.current_qty or 0
+							log.price = clearence_item.current_price or 0
+							log.comparison = doc.name
+							log.reference_type = self.doctype
+							log.reference_name = self.name
+							log.submit()
 
 
 
-
-
-
-						clearence_item.completed_percent = log.completed_percent
-						clearence_item.completed_amount = log.completed_amount
-						clearence_item.completed_qty = log.completed_qty
+							clearence_item.previous_percent = log.previous_percent
+							clearence_item.previous_amount = log.previous_percent
+							clearence_item.previous_qty = log.pervious_qty
+							clearence_item.completed_percent = log.completed_percent
+							clearence_item.completed_amount = log.completed_amount
+							clearence_item.completed_qty = log.completed_qty
 
 
 
 
 
-						clearence_item.remaining_percent = log.remaining_percent
-						clearence_item.remaining_amount = log.remaining_percent
-						clearence_item.remaining_qty = log.remaining_qty
+							clearence_item.remaining_percent = log.remaining_percent
+							clearence_item.remaining_amount = log.remaining_percent
+							clearence_item.remaining_qty = log.remaining_qty
 
 
 
@@ -356,7 +359,7 @@ class Clearance(Document):
 					
 					
 						
-			self.save()
+			#self.save()
 
 			doc.save()
 			if tender_doc :
@@ -712,7 +715,7 @@ def get_grand_clearance(source_name, target_doc=None, ignore_permissions=False):
 	sql = f""" 
 	SELECT name From tabClearance  
 	WHERE status ='Waiting For Approve' and docstatus = 1 and invoiced=0 and paid=0 
-	and comparison = '{comparison.name}'
+	and comparison = '{comparison.name}' and is_grand_clearance =0
 	"""
 	un_invoiced_clearance = frappe.db.sql_list(sql) or []
 	if not len(un_invoiced_clearance):
@@ -729,7 +732,7 @@ def get_grand_clearance(source_name, target_doc=None, ignore_permissions=False):
 	clearance_items = frappe.db.sql(clearance_items_sql,as_dict=1) or []
 	
 	if not len(clearance_items):
-		frappe.throw(_("There is no uninvoiced Clearance Items")) 
+		frappe.throw(_("There is no un invoiced Clearance Items")) 
 
 	clearance = frappe.new_doc("Clearance")
 	clearance.company = comparison.company
