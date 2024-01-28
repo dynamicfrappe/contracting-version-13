@@ -150,7 +150,7 @@ class Clearance(Document):
 				row.bank_guarantee = item.bank_guarantee
 				row.bank = item.bank
 				self.total_insurances += row.amount
-			
+			# print(f'\n\n\n===>{self.total_insurances}\n\n')
 
 
 			
@@ -387,7 +387,7 @@ class Clearance(Document):
 		journal_entry = frappe.new_doc('Journal Entry')
 		journal_entry.company = company
 		journal_entry.posting_date = nowdate()
-		# credit
+		# debit
 		credit_row = journal_entry.append("accounts", {})
 		credit_row.party_type = "Customer"
 		credit_row.account = recivable_account
@@ -396,14 +396,14 @@ class Clearance(Document):
 		credit_row.project = self.project
 		credit_row.credit_in_account_currency = flt(
 			self.grand_total, precision)
-		credit_row.reference_type = self.doctype
-		credit_row.reference_name = self.name
-		# debit
+		# credit_row.reference_type = self.doctype
+		# credit_row.reference_name = self.name
+		# credit
 		debit_row = journal_entry.append("accounts", {})
 		debit_row.account = cash_account
 		credit_row.cost_center = self.cost_center
 		credit_row.project = self.project
-		debit_row.debit_in_account_currency = flt(self.grand_total, precision)
+		debit_row.debit_in_account_currency  = flt(self.grand_total, precision)
 		debit_row.reference_type = self.doctype
 		debit_row.reference_name = self.name
 		journal_entry.save()
