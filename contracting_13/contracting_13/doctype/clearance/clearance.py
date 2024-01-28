@@ -411,31 +411,7 @@ class Clearance(Document):
 		form_link = get_link_to_form(journal_entry.doctype, journal_entry.name)
 		frappe.msgprint("Journal Entry %s Create Successfully" % form_link)
 
-		# # second journal
-		# s_journal_entry = frappe.new_doc('Journal Entry')
-		# s_journal_entry.company = company
-		# s_journal_entry.posting_date = nowdate()
-		# # credit
-		# s_credit_row = s_journal_entry.append("accounts", {})
-		# s_credit_row.account = cash_account
-		# s_credit_row.credit_in_account_currency = flt(
-		# 	self.grand_total, precision)
-		# s_credit_row.reference_type = self.doctype
-		# s_credit_row.reference_name = self.name
-		# # debit
-		# s_debit_row = s_journal_entry.append("accounts", {})
-		# s_debit_row.account = recivable_account
-		# s_debit_row.party_type = "Customer"
-		# s_debit_row.party = self.customer
-		# s_debit_row.debit_in_account_currency = flt(
-		# 	self.grand_total, precision)
-		# s_debit_row.reference_type = self.doctype
-		# s_debit_row.reference_name = self.name
-		# s_journal_entry.save()
-		# form_link = get_link_to_form(journal_entry.doctype, journal_entry.name)
-		# frappe.msgprint("Journal Entry %s Create Successfully" % form_link)
-		# self.paid=1
-		# self.save()
+		
 		frappe.db.sql(
 			"""update tabClearance set paid=1 where name='%s'""" % self.name)
 		frappe.db.commit()
