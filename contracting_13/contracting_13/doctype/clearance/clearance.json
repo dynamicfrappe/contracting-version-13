@@ -32,6 +32,7 @@
   "sales_order",
   "customer",
   "customer_name",
+  "mode_of_payment",
   "column_break_12",
   "purchase_order_date",
   "required_by",
@@ -193,12 +194,14 @@
    "label": "Taxes"
   },
   {
+   "allow_on_submit": 1,
    "fieldname": "purchase_taxes_and_charges_template",
    "fieldtype": "Dynamic Link",
    "label": "Purchase Taxes and Charges Template",
    "options": "taxes_types"
   },
   {
+   "allow_on_submit": 1,
    "fieldname": "item_tax",
    "fieldtype": "Table",
    "label": "Item Tax",
@@ -276,6 +279,7 @@
   },
   {
    "depends_on": "eval:doc.clearance_type != 'incoming'",
+   "fetch_from": "sales_order.customer",
    "fieldname": "customer",
    "fieldtype": "Link",
    "label": "Customer",
@@ -435,44 +439,18 @@
    "label": "Total"
   },
   {
-   "fieldname": "taxes_types",
-   "fieldtype": "Select",
-   "label": "Taxes Types",
-   "options": "Purchase Taxes and Charges Template\nSales Taxes and Charges Template"
-  },
-  {
-   "fieldname": "total_finished_amount",
-   "fieldtype": "Currency",
-   "label": "Total Finished Amount",
-   "read_only": 1
-  },
-  {
-   "default": "0",
-   "fieldname": "invoiced",
-   "fieldtype": "Check",
-   "label": "Invoiced"
-  },
-  {
    "allow_on_submit": 1,
-   "default": "Waiting For Approve",
-   "fieldname": "status",
-   "fieldtype": "Select",
-   "in_list_view": 1,
-   "label": "Status",
-   "options": "Waiting For Approve\nSent to customer\nInvoiced\nInvoice Clearance\nPaid\nPartially Paid\nRejected",
-   "read_only": 1
-  },
-  {
-   "fieldname": "againest_task",
+   "depends_on": "eval:doc.docstatus==1 && doc.is_grand_clearance==1",
+   "fieldname": "mode_of_payment",
    "fieldtype": "Link",
-   "label": "Againest Task",
-   "options": "Task",
-   "read_only": 1
+   "label": "Mode Of Payment",
+   "mandatory_depends_on": "eval:doc.docstatus==1 && doc.is_grand_clearance==1",
+   "options": "Mode of Payment"
   }
  ],
  "is_submittable": 1,
  "links": [],
- "modified": "2024-01-09 18:03:44.858032",
+ "modified": "2024-01-23 11:56:58.661436",
  "modified_by": "Administrator",
  "module": "Contracting 13",
  "name": "Clearance",

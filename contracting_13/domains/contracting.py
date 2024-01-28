@@ -29,9 +29,14 @@ data = {
                 "fieldtype": "Link",
                 "insert_after": "comparison",
                 "options": "Item",
-                # "depends_on": "eval:doc.against_comparison == 1",
-                # "mandatory_depends_on": "eval:doc.against_comparison == 1",
                 "label": "Comparison Item",
+
+            },
+            {
+                "label": _("All Comparsion"),
+                "fieldname": "all_comparsion",
+                "fieldtype": "Check",
+                "insert_after": "comparison_item",
 
             }
         ],
