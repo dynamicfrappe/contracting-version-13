@@ -598,20 +598,6 @@ def comparsion_state_get_state_query(doctype, txt, searchfield, start, page_len,
 		})
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 @frappe.whitelist()
 def clearance_make_purchase_invoice(source_name, target_doc=None):
     doc = frappe.get_doc("Clearance", source_name)
