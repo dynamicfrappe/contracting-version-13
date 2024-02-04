@@ -86,4 +86,26 @@ def get_comparision_items(comparison,item_code):
     return data or []
 
 
+@frappe.whitelist()
+def get_all_comparsion_item(comparsion):
+    sql = f"""
+        SELECT
+             `tabComparison Item Card Stock Item`.item as item_code
+            ,`tabComparison Item Card Stock Item`.item_name
+            ,`tabComparison Item Card Stock Item`.uom
+            ,`tabComparison Item Card Stock Item`.qty as total_qty
+            ,`tabComparison Item Card Stock Item`.unit_price
+            ,(if(`tabUOM Conversion Detail`.conversion_factor,null,1)or 1) as conversion_factor
+        FROM  `tabComparison Item Card`
+        INNER JOIN `tabComparison Item Card Stock Item`
+             ON `tabComparison Item Card Stock Item`.parent=`tabComparison Item Card`.name
+        LEFT JOIN `tabUOM Conversion Detail`
+            ON `tabUOM Conversion Detail`.parent=`tabComparison Item Card Stock Item`.item 
+            AND `tabUOM Conversion Detail`.uom=`tabComparison Item Card Stock Item`.uom
+        WHERE `tabComparison Item Card`.comparison='{comparsion}'
+    """
+    data = frappe.db.sql(sql,as_dict=1)
+    return data
+
+
 

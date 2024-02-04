@@ -97,7 +97,7 @@ frappe.ui.form.on("Clearance", {
       );
     }
     if (frm.doc.docstatus == 1) {
-      if (!frm.doc.paid) {
+      if (!frm.doc.paid && frm.doc.is_grand_clearance) {
         frm.add_custom_button(
           __("Payment Entry"),
           function () {
@@ -143,18 +143,19 @@ frappe.ui.form.on("Clearance", {
           },
           callback: function (r) {
             if (r.message) {
-              frm.add_custom_button(
-                __("Sales Invoice"),
-                function () {
-                  frappe.model.open_mapped_doc({
-                    method:
-                      "contracting_13.contracting_13.doctype.clearance.clearance.clearance_make_sales_invoice",
-                    frm: frm,
-                  });
-                },
-                __("Create")
-              );
-            } else if (
+              // frm.add_custom_button(
+              //   __("Sales Invoice"),
+              //   function () {
+              //     frappe.model.open_mapped_doc({
+              //       method:
+              //         "contracting_13.contracting_13.doctype.clearance.clearance.clearance_make_sales_invoice",
+              //       frm: frm,
+              //     });
+              //   },
+              //   __("Create")
+              // );
+            }  
+            else if (
               frm.doc.insurances.filter((x) => !x.invocied).length > 0
             ) {
               frm.add_custom_button(

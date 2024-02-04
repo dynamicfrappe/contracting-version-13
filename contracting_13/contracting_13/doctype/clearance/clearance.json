@@ -13,8 +13,6 @@
   "is_grand_clearance",
   "is_sub_clearance",
   "grand_clearance",
-  "againest_task",
-  "status",
   "column_break_3",
   "clearance_date",
   "clearance_type",
@@ -32,6 +30,7 @@
   "sales_order",
   "customer",
   "customer_name",
+  "mode_of_payment",
   "column_break_12",
   "purchase_order_date",
   "required_by",
@@ -43,29 +42,27 @@
   "payment_of_insurance_copy_of_operation_and_initial_delivery",
   "clearance_items_section",
   "items",
-  "total_finished_amount",
   "taxes_section",
-  "taxes_types",
+  "taxes_type",
   "purchase_taxes_and_charges_template",
   "item_tax",
   "total",
   "total_after_tax",
   "deductions_section_section",
   "deductions",
+  "total_deductions",
   "insurances_section",
   "insurances",
+  "total_insurances",
   "notes_section",
   "user_notes",
   "totals_section",
   "total_qty",
-  "total_insurances",
-  "total_deductions",
   "total_price",
   "column_break_42",
   "tax_total",
   "grand_total",
   "paid",
-  "invoiced",
   "amended_from",
   "grand_clearance_details_section",
   "sub_clearance_details"
@@ -193,12 +190,14 @@
    "label": "Taxes"
   },
   {
+   "allow_on_submit": 1,
    "fieldname": "purchase_taxes_and_charges_template",
    "fieldtype": "Dynamic Link",
    "label": "Purchase Taxes and Charges Template",
-   "options": "taxes_types"
+   "options": "taxes_type"
   },
   {
+   "allow_on_submit": 1,
    "fieldname": "item_tax",
    "fieldtype": "Table",
    "label": "Item Tax",
@@ -213,7 +212,6 @@
    "read_only": 1
   },
   {
-   "depends_on": "eval:doc.is_grand_clearance ==1 ;",
    "fieldname": "deductions_section_section",
    "fieldtype": "Section Break",
    "label": "Deductions Section"
@@ -276,6 +274,7 @@
   },
   {
    "depends_on": "eval:doc.clearance_type != 'incoming'",
+   "fetch_from": "sales_order.customer",
    "fieldname": "customer",
    "fieldtype": "Link",
    "label": "Customer",
@@ -412,7 +411,7 @@
    "default": "0",
    "fieldname": "total_insurances",
    "fieldtype": "Currency",
-   "label": "Total Insurances(Deductions)",
+   "label": "Total Insurances",
    "read_only": 1
   },
   {
@@ -435,44 +434,24 @@
    "label": "Total"
   },
   {
-   "fieldname": "taxes_types",
-   "fieldtype": "Select",
-   "label": "Taxes Types",
-   "options": "Purchase Taxes and Charges Template\nSales Taxes and Charges Template"
-  },
-  {
-   "fieldname": "total_finished_amount",
-   "fieldtype": "Currency",
-   "label": "Total Finished Amount",
-   "read_only": 1
-  },
-  {
-   "default": "0",
-   "fieldname": "invoiced",
-   "fieldtype": "Check",
-   "label": "Invoiced"
-  },
-  {
    "allow_on_submit": 1,
-   "default": "Waiting For Approve",
-   "fieldname": "status",
-   "fieldtype": "Select",
-   "in_list_view": 1,
-   "label": "Status",
-   "options": "Waiting For Approve\nSent to customer\nInvoiced\nInvoice Clearance\nPaid\nPartially Paid\nRejected",
-   "read_only": 1
+   "depends_on": "eval:doc.docstatus==1 && doc.is_grand_clearance==1",
+   "fieldname": "mode_of_payment",
+   "fieldtype": "Link",
+   "label": "Mode Of Payment",
+   "mandatory_depends_on": "eval:doc.docstatus==1 && doc.is_grand_clearance==1",
+   "options": "Mode of Payment"
   },
   {
-   "fieldname": "againest_task",
-   "fieldtype": "Link",
-   "label": "Againest Task",
-   "options": "Task",
-   "read_only": 1
+   "fieldname": "taxes_type",
+   "fieldtype": "Select",
+   "label": "Taxes Type",
+   "options": "Purchase Taxes and Charges Template\nSales Taxes and Charges Template"
   }
  ],
  "is_submittable": 1,
  "links": [],
- "modified": "2024-01-09 18:03:44.858032",
+ "modified": "2024-01-29 10:27:19.200778",
  "modified_by": "Administrator",
  "module": "Contracting 13",
  "name": "Clearance",

@@ -150,7 +150,7 @@ class Clearance(Document):
 				row.bank_guarantee = item.bank_guarantee
 				row.bank = item.bank
 				self.total_insurances += row.amount
-			
+			# print(f'\n\n\n===>{self.total_insurances}\n\n')
 
 
 			
@@ -369,65 +369,49 @@ class Clearance(Document):
 
 	@frappe.whitelist()
 	def create_payment_entry(self):
-		if not self.customer:
-			return "Please Set Customer"
+		# if not self.customer:
+		# 	return "Please Set Customer"
 		company = frappe.db.get_value(
 			"Global Defaults", None, "default_company")
 		company_doc = frappe.get_doc("Company", company)
-		cash_account = company_doc.default_cash_account
-		project_account = company_doc.capital_work_in_progress_account
-		recivable_account = company_doc.default_receivable_account
+		cash_account = frappe.db.get_value('Mode of Payment Account',{'parent':self.mode_of_payment},'default_account') # mode of payment
+		# project_account = company_doc.capital_work_in_progress_account
+		recivable_account = company_doc.default_receivable_account # customer account
+		if self.customer:
+			cst_sql_account = f"""SELECT account FROM `tabParty Account` WHERE parent='{self.customer}'"""
+			customer_account = frappe.db.sql(cst_sql_account,as_dict=1)[0].get('account') or ''
+			recivable_account = customer_account if customer_account else recivable_account
 		precision = frappe.get_precision(
 			"Journal Entry Account", "debit_in_account_currency")
 
 		journal_entry = frappe.new_doc('Journal Entry')
 		journal_entry.company = company
 		journal_entry.posting_date = nowdate()
-		# credit
+		# debit
 		credit_row = journal_entry.append("accounts", {})
 		credit_row.party_type = "Customer"
 		credit_row.account = recivable_account
 		credit_row.party = self.customer
+		credit_row.cost_center = self.cost_center
+		credit_row.project = self.project
 		credit_row.credit_in_account_currency = flt(
 			self.grand_total, precision)
-		credit_row.reference_type = self.doctype
-		credit_row.reference_name = self.name
-		# debit
+		# credit_row.reference_type = self.doctype
+		# credit_row.reference_name = self.name
+		# credit
 		debit_row = journal_entry.append("accounts", {})
-		debit_row.account = project_account
-		debit_row.debit_in_account_currency = flt(self.grand_total, precision)
+		debit_row.account = cash_account
+		credit_row.cost_center = self.cost_center
+		credit_row.project = self.project
+		debit_row.debit_in_account_currency  = flt(self.grand_total, precision)
 		debit_row.reference_type = self.doctype
 		debit_row.reference_name = self.name
 		journal_entry.save()
-		journal_entry.submit()
+		# journal_entry.submit()
 		form_link = get_link_to_form(journal_entry.doctype, journal_entry.name)
 		frappe.msgprint("Journal Entry %s Create Successfully" % form_link)
 
-		# second journal
-		s_journal_entry = frappe.new_doc('Journal Entry')
-		s_journal_entry.company = company
-		s_journal_entry.posting_date = nowdate()
-		# credit
-		s_credit_row = s_journal_entry.append("accounts", {})
-		s_credit_row.account = cash_account
-		s_credit_row.credit_in_account_currency = flt(
-			self.grand_total, precision)
-		s_credit_row.reference_type = self.doctype
-		s_credit_row.reference_name = self.name
-		# debit
-		s_debit_row = s_journal_entry.append("accounts", {})
-		s_debit_row.account = recivable_account
-		s_debit_row.party_type = "Customer"
-		s_debit_row.party = self.customer
-		s_debit_row.debit_in_account_currency = flt(
-			self.grand_total, precision)
-		s_debit_row.reference_type = self.doctype
-		s_debit_row.reference_name = self.name
-		s_journal_entry.save()
-		form_link = get_link_to_form(journal_entry.doctype, journal_entry.name)
-		frappe.msgprint("Journal Entry %s Create Successfully" % form_link)
-		# self.paid=1
-		# self.save()
+		
 		frappe.db.sql(
 			"""update tabClearance set paid=1 where name='%s'""" % self.name)
 		frappe.db.commit()
@@ -612,20 +596,6 @@ def comparsion_state_get_state_query(doctype, txt, searchfield, start, page_len,
 			'page_len': page_len,
 			'txt': "%%%s%%" % txt
 		})
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 @frappe.whitelist()
