@@ -1,4 +1,8 @@
 frappe.ui.form.on("Material Request",{
+
+  // onload:function(frm) {
+
+  // },
   comparison : function (frm) {
           frappe.call({
             "method" : "contracting_13.contracting_13.doctype.stock_functions.stock_entry_setup" ,
