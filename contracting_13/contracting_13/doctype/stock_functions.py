@@ -25,7 +25,7 @@ def fetch_contracting_data(*args , **kwargs ):
 
 @frappe.whitelist()
 def stock_entry_setup(comparison , *args ,**kwargs):
-    print(f'\n\n\n------------------\n\n')
+    # print(f'\n\n\n---//////////---------------\n\n')
     data = frappe.db.sql(""" SELECT `tabItem`.item_code  FROM  `tabItem`
     inner Join
     `tabComparison Item` on `tabItem`.name = `tabComparison Item`.clearance_item
@@ -34,8 +34,11 @@ def stock_entry_setup(comparison , *args ,**kwargs):
     item_list = []
     for i in data :
         item_list.append(i[0])
-    print(f'\n\n\n{item_list}\n\n')
-    return (item_list)
+    project = frappe.db.get_value("Comparison",comparison,'project')
+    cost_center = frappe.db.get_value("Project",project,'cost_center')
+    data = {"items":item_list,"project":project,"cost_center":cost_center}
+    # print(f'\n\n\n{data}\n\n')
+    return data
 
 
 #{"parent": item_code, "uom": uom}

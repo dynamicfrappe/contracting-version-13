@@ -38,8 +38,23 @@ data = {
                 "fieldtype": "Check",
                 "insert_after": "comparison_item",
 
-            }
+            },
+            {
+                "label": "Project",
+                "fieldname": "project",
+                "fieldtype": "Link",
+                "insert_after": "company",
+                "options": "Project",
+            },
+            {
+                "label": "Cost Center",
+                "fieldname": "cost_center",
+                "fieldtype": "Link",
+                "insert_after": "project",
+                "options": "Cost Center",
+            },
         ],
+        
         'Quotation':[
             {
                 "label":_("Project"),
