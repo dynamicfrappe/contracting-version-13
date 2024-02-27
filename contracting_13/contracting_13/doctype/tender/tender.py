@@ -20,7 +20,7 @@ class Tender(Document):
     @frappe.whitelist()
     def validate(self):
         #check insurance 
-        self.validate_comparison()
+        # self.validate_comparison()
         self.validate_incurance_details()
         # template states
         self.validate_states_template()
