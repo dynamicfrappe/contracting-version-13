@@ -683,11 +683,19 @@ def get_grand_clearance(source_name, target_doc=None, ignore_permissions=False):
 	# 			and comparison = '{comparison.name}'
 	# """
 
+	##base
+	# sql = f""" 
+	# SELECT name From tabClearance  
+	# WHERE status ='Waiting For Approve' and docstatus = 1 and invoiced=0 and paid=0 
+	# and comparison = '{comparison.name}' and is_grand_clearance =0
+	# """
+
 	sql = f""" 
 	SELECT name From tabClearance  
-	WHERE status ='Waiting For Approve' and docstatus = 1 and invoiced=0 and paid=0 
+	WHERE   docstatus = 1 and invoiced=0 and paid=0 
 	and comparison = '{comparison.name}' and is_grand_clearance =0
 	"""
+
 	un_invoiced_clearance = frappe.db.sql_list(sql) or []
 	if not len(un_invoiced_clearance):
 		frappe.throw(_("There is no uninvoiced Clearance"))

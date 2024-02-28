@@ -3,40 +3,58 @@ frappe.ui.form.on("Material Request",{
   // onload:function(frm) {
 
   // },
-  comparison : function (frm) {
-          frappe.call({
-            "method" : "contracting_13.contracting_13.doctype.stock_functions.stock_entry_setup" ,
-            args:{
-              "comparison" : frm.doc.comparison,
-            },
-            callback :function(r){
-              if (r.message){
+  setup:function(frm){
+    frm.events.setup_comparsion_query(frm)
+  },
 
-                frm.set_query("comparison_item",function () {
-                  return {
-                    filters: [
-                      ["item_code", "in", r.message],
-                    ],
-                  };
-                });
-                frm.refresh_field("comparison_item")
-                frm.set_query("comparison_item","items",function () {
-                  return {
-                    filters: [
-                      ["item_code", "in", r.message],
-                    ],
-                  };
-                });
-                frm.refresh_field("items")
-              }
-            } 
-         
-          })
-      
+  refresh:function(frm){
+    frm.events.setup_comparsion_query(frm)
+  },
+
+  comparison : function (frm) {
+    frm.events.setup_comparsion_query(frm)
     },
 
+    setup_comparsion_query:function(frm){
+      if(frm.doc.comparison){
+        frappe.call({
+          "method" : "contracting_13.contracting_13.doctype.stock_functions.stock_entry_setup" ,
+          args:{
+            "comparison" : frm.doc.comparison,
+          },
+          freeze: true,
+          async: true,
+          callback :function(r){
+            if (r.message){
+              // console.log(r.message)
+              // console.log(r.message.items)
+              frm.set_value("project",r.message.project)
+              frm.set_value("cost_center",r.message.cost_center)
+              frm.set_query("comparison_item",function () {
+                return {
+                  filters: [
+                    ["item_code", "in", r.message.items],
+                  ],
+                };
+              });
+              frm.refresh_field("comparison_item")
+              frm.set_query("comparison_item","items",function () {
+                return {
+                  filters: [
+                    ["item_code", "in", r.message.items],
+                  ],
+                };
+              });
+              frm.refresh_fields("items","cost_center","project")
+            }
+          } 
+       
+        })
+      }
+      
+    },
     comparison_item:function(frm){
-      if(frm.doc.comparison_item){
+      if(frm.doc.comparison_item && frm.doc.comparison){
         frappe.call({
           "method" : "contracting_13.contracting_13.doctype.stock_functions.get_comparision_items" ,
           args:{
@@ -56,6 +74,9 @@ frappe.ui.form.on("Material Request",{
                   transfer_qty: element.total_qty * element.conversion_factor,
                   conversion_factor: element.conversion_factor,
                   basic_rate: element.unit_price,
+                  cost_center: frm.doc.cost_center,
+                  project: frm.doc.project,
+                  item: frm.doc.comparison_item || "", 
                   
               });
               })

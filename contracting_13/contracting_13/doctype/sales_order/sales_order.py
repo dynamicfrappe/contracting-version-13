@@ -42,7 +42,7 @@ class SalesOrder(SellingController):
 	def validate(self):
 		super(SalesOrder, self).validate()
 		self.validate_delivery_date()
-		self.validate_proj_cust()
+		# self.validate_proj_cust()
 		self.validate_po()
 		self.validate_uom_is_integer("stock_uom", "stock_qty")
 		self.validate_uom_is_integer("uom", "qty")
@@ -171,7 +171,7 @@ class SalesOrder(SellingController):
 				frappe.throw(_("Row #{0}: Set Supplier for item {1}").format(d.idx, d.item_code))
 
 	def on_submit(self):
-		self.update_comparison_status()
+		# self.update_comparison_status()
 		self.check_credit_limit()
 		self.update_reserved_qty()
 
@@ -188,9 +188,10 @@ class SalesOrder(SellingController):
 			update_coupon_code_count(self.coupon_code,'used')
 	def update_comparison_status(self) :
 		if self.comparison :
-			print("Update comparison ")
-			frappe.db.sql(f""" UPDATE `tabComparison` SET status ='Ordered'  WHERE name = '{self.comparison}'""")
-			frappe.db.commit()
+			...
+		# 	print("Update comparison ")
+		# 	frappe.db.sql(f""" UPDATE `tabComparison` SET status ='Ordered'  WHERE name = '{self.comparison}'""")
+		# 	frappe.db.commit()
 	def on_cancel(self):
 		self.ignore_linked_doctypes = ('GL Entry', 'Stock Ledger Entry')
 		super(SalesOrder, self).on_cancel()
