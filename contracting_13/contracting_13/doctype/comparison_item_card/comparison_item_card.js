@@ -4,6 +4,7 @@
 frappe.ui.form.on('Comparison Item Card', {
     onload:function(frm){
         frm.ignore_doctypes_on_cancel_all = ['Comparison'];
+        frm.events.setup_quiries(frm)
     },
     // refresh:function(frm){
     // },
@@ -12,7 +13,7 @@ frappe.ui.form.on('Comparison Item Card', {
 	},
     refresh: function(frm) {
         frm.events.setup_quiries(frm)
-        // frm.events.upload_download_data(frm)
+        frm.events.upload_download_data(frm)
         frm.events.setup_function(frm)
         
 	},
@@ -103,7 +104,7 @@ frappe.ui.form.on('Comparison Item Card', {
                           }
                         },
                       });
-                      d.hide();
+                    //   d.hide();
                     },
                   });
                   d.show();
@@ -139,6 +140,15 @@ frappe.ui.form.on('Comparison Item Card', {
             }
         
         }
+
+
+        frm.set_query("project", function() {
+            return {
+                "filters": {
+                    "customer": frm.doc.customer
+                }
+            };
+        });
     },
     qty:(frm,cdt,cdn)=>{
       let qty =frm.doc.qty
@@ -192,6 +202,8 @@ frappe.ui.form.on('Comparison Item Card', {
         frm.set_value("total_item_cost",all_cost)
         frm.refresh_field("total_item_cost")
     }
+
+
     
 });
 
@@ -218,6 +230,20 @@ frappe.ui.form.on('Comparison Item Card Stock Item', {
             //     },
             //  });
         // }
+        console.log("aa" ,d.item)
+        frappe.call({
+            "method"  : "contracting_13.contracting_13.doctype.comparison_item_card.comparison_item_card.get_item_uom" ,
+            "args" :{
+                "item" :d.item
+            },callback:function(r){
+                console.log(r)
+                if (r.message) {
+                    console.log(r.message)
+                    d.uom= r.message 
+                    frm.refresh_field("items")
+                }
+            }
+        })
         cur_frm.fields_dict["items"].grid.get_field("item_price").get_query = function(doc) {
             console.log('test---')
             return {

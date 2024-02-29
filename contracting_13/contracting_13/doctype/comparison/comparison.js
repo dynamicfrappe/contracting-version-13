@@ -7,6 +7,13 @@ frappe.ui.form.on("Comparison", {
 //     // frm.ignore_doctypes_on_cancel_all = ['Comparison Item Card'];
 // },
   setup(frm) {
+    frm.set_query("project", function() {
+      return {
+          "filters": {
+              "customer": frm.doc.customer
+          }
+      };
+  });
     frm.set_query("account_head", "taxes", function () {
       return {
         filters: [
@@ -550,10 +557,10 @@ frappe.ui.form.on("Comparison", {
     let end_date = new Date(frm.doc.end_date);
     let now = new Date();
     start_date.setDate(start_date.getDate() + 1);
-    if (start_date < now) {
-      frm.set_value("start_date", "");
-      frappe.throw("Start Date Should Be After Today");
-    }
+    // if (start_date < now) {
+    //   frm.set_value("start_date", "");
+    //   frappe.throw("Start Date Should Be After Today");
+    // }
     if (end_date < start_date) {
       frm.set_value("start_date", "");
       frm.set_value("end_date", "");

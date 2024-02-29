@@ -215,8 +215,7 @@
    "allow_on_submit": 1,
    "fieldname": "margin_rate",
    "fieldtype": "Currency",
-   "label": "Margin rate",
-   "read_only_depends_on": "eval:doc.docstatus== 0 ;"
+   "label": "Margin rate"
   },
   {
    "fieldname": "price_list",
@@ -242,7 +241,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2023-12-24 13:54:49.081035",
+ "modified": "2024-02-28 18:41:14.540686",
  "modified_by": "Administrator",
  "module": "Contracting 13",
  "name": "Comparison Item Card",

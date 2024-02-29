@@ -136,6 +136,15 @@ frappe.ui.form.on("Stock Entry", {
                 d.stock_uom= element.uom,
                 d.transfer_qty= element.total_qty * element.conversion_factor,
                 d.conversion_factor= element.conversion_factor
+                frappe.call({
+                  "method" :"contracting_13.controllers.martial_request.get_item_desc"
+                  , args:{
+                    "item_code" :element.item_code,
+                  },
+                  callback:function(r){
+                    d.description = r.message
+                  }
+                })
                 // frm.events.get_item_details_custom(frm, d.doctype, d.name);
                 // frm.events.set_basic_rate(frm, d.doctype, d.name);
             

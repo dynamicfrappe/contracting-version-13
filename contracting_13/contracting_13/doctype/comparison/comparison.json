@@ -11,11 +11,15 @@
   "company",
   "tender",
   "tender_status",
+  "status",
   "column_break_2",
   "customer",
   "customer_name",
   "project",
+  "cost_center",
+  "set_all_item_cost_center_as_project_cost_center",
   "contractor",
+  "income_account",
   "contractor_name",
   "allow_material_over_price",
   "date_section",
@@ -65,8 +69,10 @@
  ],
  "fields": [
   {
+   "default": "Direct",
    "fieldname": "comparison_type",
    "fieldtype": "Select",
+   "hidden": 1,
    "label": "Comparison Type",
    "options": "Direct\nFrom Contractor",
    "read_only": 1
@@ -248,6 +254,7 @@
    "read_only": 1
   },
   {
+   "allow_on_submit": 1,
    "fieldname": "grand_total",
    "fieldtype": "Currency",
    "label": "Grand Total",
@@ -389,7 +396,8 @@
    "fieldname": "clearance_states",
    "fieldtype": "Table",
    "label": "Clearance States ",
-   "options": "Tender States Template"
+   "options": "Tender States Template",
+   "reqd": 1
   },
   {
    "fieldname": "section_break_fbt5a",
@@ -404,13 +412,46 @@
   {
    "fieldname": "taxes_type",
    "fieldtype": "Select",
-   "label": "Taxes Type",
+   "label": "Taxes Types",
    "options": "Purchase Taxes and Charges Template\nSales Taxes and Charges Template"
+  },
+  {
+   "allow_on_submit": 1,
+   "default": "Waiting",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Status",
+   "options": "Waiting\nOrdered\nStarted\nClosed",
+   "read_only": 1
+  },
+  {
+   "allow_on_submit": 1,
+   "fetch_from": "project.cost_center",
+   "fieldname": "cost_center",
+   "fieldtype": "Link",
+   "label": "Cost Center",
+   "options": "Cost Center"
+  },
+  {
+   "allow_on_submit": 1,
+   "default": "0",
+   "description": "If You check This All Items Cost Center Will be Same Like Project ",
+   "fieldname": "set_all_item_cost_center_as_project_cost_center",
+   "fieldtype": "Check",
+   "label": "Set All Item Cost Center As Project Cost Center"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "income_account",
+   "fieldtype": "Link",
+   "label": "Income Account",
+   "options": "Account"
   }
  ],
  "is_submittable": 1,
  "links": [],
- "modified": "2024-01-29 10:27:24.690296",
+ "modified": "2024-02-28 17:25:29.788945",
  "modified_by": "Administrator",
  "module": "Contracting 13",
  "name": "Comparison",

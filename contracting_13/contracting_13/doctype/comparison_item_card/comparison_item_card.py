@@ -39,8 +39,10 @@ class ComparisonItemCard(Document):
 						item.db_set('price',self.result + float(self.margin_rate  or 0 ))
 						item.db_set('total_price',item.price * item.qty)
 					frappe.db.commit()
+		self.total_with_margin = float(self.margin_rate or 0) +  float(self.total_item_cost or 0 ) 
 				
 	def validate(self):
+		self.calculate_totals()
 		self.validate_qty()
 		self.calcualte_profit()
 		self.update_sales_price_on_submit()
@@ -49,7 +51,15 @@ class ComparisonItemCard(Document):
 			self.qty = 1
 		# if self.qty > self.qty_from_comparison:
 		# 	frappe.throw("""You Cant Select QTY More Than %s"""%self.qty_from_comparison)
-
+	def calculate_totals(self) :
+		total_amount = 0
+		for item in self.items :
+			item.total_amount = float(item.qty or 0) * float(item.unit_price or 0 ) 
+			item.comparison = self.comparison
+			#item.total_sales = item.total_amount
+			total_amount += float(item.total_amount)
+		self.total_item_price = total_amount
+		self.item_cost = total_amount
 	@frappe.whitelist()
 	def validat_item(self , item_price , item):
 		item_price = frappe.get_doc("Item Price" , item_price) 
@@ -161,3 +171,9 @@ def get_item_price(item_code):
     if price_list:
         item_price = frappe.db.get_value('Item Price',{'item_code':item_code,'price_list':price_list,'selling':1},'price_list_rate')
     return [item_price,price_list]
+
+
+
+@frappe.whitelist()
+def get_item_uom(item) :
+	return frappe.db.get_value("Item" , item , "stock_uom")
