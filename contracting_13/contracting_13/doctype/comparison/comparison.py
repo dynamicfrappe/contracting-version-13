@@ -97,6 +97,17 @@ class Comparison(Document):
 			if self.set_all_item_cost_center_as_project_cost_center == 1 :
 				for item in self.item :
 					item.cost_center = self.cost_center
+		self.update_project_and_cost_center()
+	
+	def update_project_and_cost_center(self):
+		name = self.name
+		data = frappe.db.get_list("Comparison Item Card" , filters = {"comparison" : name})
+		for i in data:
+			doc = frappe.get_doc("Comparison Item Card", i.name)
+			doc.cost_center = self.cost_center
+			doc.project = self.project
+			doc.db_update()
+		
 			
 	#doctype methods 
 	def validate(self):

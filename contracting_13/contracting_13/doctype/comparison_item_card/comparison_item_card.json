@@ -15,6 +15,7 @@
   "tender",
   "comparison",
   "project",
+  "cost_center",
   "qty",
   "stock_item_section",
   "price_list",
@@ -236,12 +237,19 @@
    "fieldtype": "Currency",
    "label": "Total With Margin",
    "read_only": 1
+  },
+  {
+   "fetch_from": "comparison.cost_center",
+   "fieldname": "cost_center",
+   "fieldtype": "Link",
+   "label": "Cost Center",
+   "options": "Cost Center"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-02-28 18:41:14.540686",
+ "modified": "2024-04-21 13:58:59.556023",
  "modified_by": "Administrator",
  "module": "Contracting 13",
  "name": "Comparison Item Card",

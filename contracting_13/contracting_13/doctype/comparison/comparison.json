@@ -1,7 +1,7 @@
 {
  "actions": [],
  "allow_rename": 1,
- "autoname": "format:COM-{DD}-{MM}-{YY}-{####}",
+ "autoname": "format:COM-{DD}-{MM}-{YY}-{####}-{comparison_number}",
  "creation": "2021-11-21 17:56:12.664139",
  "doctype": "DocType",
  "editable_grid": 1,
@@ -451,7 +451,7 @@
  ],
  "is_submittable": 1,
  "links": [],
- "modified": "2024-02-28 17:25:29.788945",
+ "modified": "2024-04-21 18:15:26.403094",
  "modified_by": "Administrator",
  "module": "Contracting 13",
  "name": "Comparison",

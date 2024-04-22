@@ -98,7 +98,10 @@ def get_all_comparsion_item(comparsion):
             ,`tabComparison Item Card Stock Item`.uom
             ,`tabComparison Item Card Stock Item`.qty as total_qty
             ,`tabComparison Item Card Stock Item`.unit_price
+            ,`tabComparison Item Card`.project
+            , `tabComparison Item Card`.cost_center
             ,(if(`tabUOM Conversion Detail`.conversion_factor,null,1)or 1) as conversion_factor
+            ,`tabComparison Item Card`.item_code as item
         FROM  `tabComparison Item Card`
         INNER JOIN `tabComparison Item Card Stock Item`
              ON `tabComparison Item Card Stock Item`.parent=`tabComparison Item Card`.name

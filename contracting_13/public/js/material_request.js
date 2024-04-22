@@ -1,19 +1,48 @@
 frappe.ui.form.on("Material Request",{
 
-  // onload:function(frm) {
-
-  // },
+  onload:function(frm) {
+    frm.events.get_filters(frm)
+  },
   setup:function(frm){
     frm.events.setup_comparsion_query(frm)
   },
 
   refresh:function(frm){
     frm.events.setup_comparsion_query(frm)
+    
   },
 
   comparison : function (frm) {
     frm.events.setup_comparsion_query(frm)
     },
+    get_filters: function(frm){
+      if(frm.doc.comparison){
+          frappe.call({
+            method: "frappe.client.get",
+            args: {
+              doctype: "Comparison",
+                name:frm.doc.comparison,
+        },
+        callback: function(r) {
+                  if(r.message){
+                      console.log(r.message.item);
+                      let item = r.message.item ; 
+                      const clearanceValues = item.map(item => item.clearance_item);;
+                      console.log(clearanceValues);
+                      frm.set_query('comparison_item', () => {
+                          return {
+                              filters: {
+                                  name: ["in" , clearanceValues]
+                              }
+                          }
+                      })
+                  }
+
+              }
+          })
+      }      
+
+  },
 
     setup_comparsion_query:function(frm){
       if(frm.doc.comparison){
@@ -28,8 +57,8 @@ frappe.ui.form.on("Material Request",{
             if (r.message){
               // console.log(r.message)
               // console.log(r.message.items)
-              frm.set_value("project",r.message.project)
-              frm.set_value("cost_center",r.message.cost_center)
+              // frm.set_value("project",r.message.project)
+              // frm.set_value("cost_center",r.message.cost_center)
               frm.set_query("comparison_item",function () {
                 return {
                   filters: [
@@ -105,12 +134,15 @@ frappe.ui.form.on("Material Request",{
                 let row = frm.add_child('items', {
                   item_code: element.item_code,
                   item_name: element.item_name,
-                  qty: element.total_qty,
+                  qty: element.total_qty * parseFloat(get_qty(frm.doc.comparison)),
                   uom: element.uom,
                   stock_uom: element.uom,
-                  transfer_qty: element.total_qty * element.conversion_factor,
+                  transfer_qty: element.total_qty * element.conversion_factor * parseFloat(get_qty(frm.doc.comparison)),
                   conversion_factor: element.conversion_factor,
                   basic_rate: element.unit_price,
+                  project: element.project,
+                  cost_center:element.cost_center,
+                  item: element.item
                   
               });
               })
@@ -126,3 +158,26 @@ frappe.ui.form.on("Material Request",{
     
     
 })
+
+function get_qty(comparison){
+  var table ; 
+  frappe.call({
+    async:false,
+    method: "frappe.client.get",
+    args: {
+      doctype: "Comparison",
+              name:comparison,
+    },
+    callback: function(r) {
+              if(r.message){
+                  console.log(r.message.item);
+                  let item = r.message.item ; 
+                  const clearanceValues = item.map(item => item.qty);
+                  console.log(clearanceValues);
+                  table = clearanceValues[0] ;
+              }
+
+          }
+      })
+      return table ;
+}

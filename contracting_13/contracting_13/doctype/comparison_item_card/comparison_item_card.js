@@ -5,6 +5,7 @@ frappe.ui.form.on('Comparison Item Card', {
     onload:function(frm){
         frm.ignore_doctypes_on_cancel_all = ['Comparison'];
         frm.events.setup_quiries(frm)
+        frm.events.get_filters(frm)
     },
     // refresh:function(frm){
     // },
@@ -17,6 +18,34 @@ frappe.ui.form.on('Comparison Item Card', {
         frm.events.setup_function(frm)
         
 	},
+    get_filters: function(frm){
+        if(frm.doc.comparison){
+            frappe.call({
+			    method: "frappe.client.get",
+			    args: {
+				    doctype: "Comparison",
+                    name:frm.doc.comparison,
+			    },
+			    callback: function(r) {
+                    if(r.message){
+                        console.log(r.message.item);
+                        let item = r.message.item ; 
+                        const clearanceValues = item.map(item => item.clearance_item);;
+                        console.log(clearanceValues);
+                        frm.set_query('item_code', () => {
+                            return {
+                                filters: {
+                                    name: ["in" , clearanceValues]
+                                }
+                            }
+                        })
+                    }
+
+                }
+            })
+        }      
+
+    },
     setup_function: function(frm) {
         console.log("Setup")
         if (frm.doc.docstatus == 1) {
