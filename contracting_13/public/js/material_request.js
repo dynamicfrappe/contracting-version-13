@@ -142,7 +142,8 @@ frappe.ui.form.on("Material Request",{
                   basic_rate: element.unit_price,
                   project: element.project,
                   cost_center:element.cost_center,
-                  item: element.item
+                  item: element.item,
+                  description: frappe.db.get_value("Item", element.item_code , "description" )
                   
               });
               })
