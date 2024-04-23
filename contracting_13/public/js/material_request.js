@@ -143,7 +143,7 @@ frappe.ui.form.on("Material Request",{
                   project: element.project,
                   cost_center:element.cost_center,
                   item: element.item,
-                  description: frappe.db.get_value("Item", element.item_code , "description" )
+                  description: get_details(element.item_code)
                   
               });
               })
@@ -159,6 +159,24 @@ frappe.ui.form.on("Material Request",{
     
     
 })
+function get_details(item_code){
+  var description ; 
+  frappe.call({
+    async:false,
+    method: "frappe.client.get",
+    args: {
+      doctype: "Item",
+        name:item_code,
+    },
+    callback: function(r) {
+              if(r.message){
+                  description = r.message.description ; 
+              }
+
+          }
+      })
+      return description ; 
+}
 
 function get_qty(comparison){
   var table ; 
@@ -171,10 +189,8 @@ function get_qty(comparison){
     },
     callback: function(r) {
               if(r.message){
-                  console.log(r.message.item);
                   let item = r.message.item ; 
-                  const clearanceValues = item.map(item => item.qty);
-                  console.log(clearanceValues);
+                  const clearanceValues = item.map(item => item.qty)
                   table = clearanceValues[0] ;
               }
 
