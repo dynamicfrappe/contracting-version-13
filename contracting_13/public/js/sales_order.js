@@ -1,10 +1,10 @@
 frappe.ui.form.on("Sales Order", {
-  setup: function (frm) {
-  },
+  // setup: function (frm) {
+  // },
   refresh: function (frm) {
     console.log("Hello 2")
     frm.remove_custom_button('Sales Invoice' ,'Create' );
-    frm.events.get_cost_centrt(frm)
+    // frm.events.get_cost_centrt(frm)
     // frm.set_query("comparison", function () {
     //   return {
     //     filters: {
