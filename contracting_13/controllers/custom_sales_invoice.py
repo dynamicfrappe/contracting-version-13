@@ -115,12 +115,12 @@ class CustomSalesInvoice(SalesInvoice):
 							"is_fixed_asset"
 						):
 							item.set("is_fixed_asset", ret.get("is_fixed_asset", 0))
-
+						default_cost_center = frappe.db.get_value("Company" , frappe.defaults.get_user_default("Company") , "cost_center")
 						# Double check for cost center
 						# Items add via promotional scheme may not have cost center set
 						if hasattr(item, "cost_center") and not item.get("cost_center"):
 							item.set(
-								"cost_center", self.get("cost_center") or erpnext.get_default_cost_center(self.company)
+								"cost_center", self.get("cost_center") or default_cost_center
 							)
 
 						if ret.get("pricing_rules"):

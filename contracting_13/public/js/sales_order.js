@@ -69,11 +69,7 @@ frappe.ui.form.on("Sales Order", {
 
     }
   },
-  onload: function (frm) {
-   
-    console.log("Hello ")
-    frm.remove_custom_button('Sales Invoice' ,'Create' );
-  },
+
   comparison: function (frm) {
     console.log("com");
     frappe.call({
