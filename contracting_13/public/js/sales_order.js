@@ -3,7 +3,7 @@ frappe.ui.form.on("Sales Order", {
   // },
   refresh: function (frm) {
     console.log("Hello 2")
-    frm.remove_custom_button('Sales Invoice' ,'Create' );
+   
     // frm.events.get_cost_centrt(frm)
     // frm.set_query("comparison", function () {
     //   return {
@@ -13,6 +13,7 @@ frappe.ui.form.on("Sales Order", {
     //   };
     // });
     if (frm.doc.docstatus == 1 && frm.doc.comparison) {
+      // frm.remove_custom_button('Sales Invoice' ,'Create' );
       frm.add_custom_button(
         __("Tasks"),
         function () {
