@@ -1,12 +1,10 @@
 frappe.ui.form.on("Payment Entry", {
  
-  refresh: function (frm) {
-    frm.events.get_cost_centrt(frm)
-    },
+ 
      
   project:function(frm){
     console.log("Pass")
-        // frm.events.get_cost_centrt(frm)
+        frm.events.get_cost_centrt(frm)
   },
 
   get_cost_centrt:function(frm){
