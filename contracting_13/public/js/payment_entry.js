@@ -22,8 +22,11 @@ frappe.ui.form.on("Payment Entry", {
       },
       'callback': function(res){
         if (res.message.cost_center)  {
-          frm.set_value("cost_center", res.message.cost_center)
-          frm.refresh_field("cost_center")
+          if (res.message.callback.length > 2 ){
+            frm.set_value("cost_center", res.message.cost_center)
+            frm.refresh_field("cost_center")
+          }
+            
         }
         
       },
