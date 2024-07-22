@@ -147,7 +147,6 @@ class Comparison(Document):
 			if is_group :
 				frappe.throw(_("Cost Center {0} is Group at row {2} in {3}")
 					.format(item.cost_center, item.idx , "Items" if item.doctype=="Comparison Item" else "Taxes"))
-	
 	""" 
 	###################
 	  Calculate Totals
@@ -172,7 +171,7 @@ class Comparison(Document):
 			total_qty = total_qty + float(item.qty) 
 		self.total_amount = total_amount
 		self.total_qty = total_qty
-
+    
 	def validate_state(self) :
 		percent = 0
 		for state in self.clearance_states :
@@ -665,4 +664,13 @@ def get(doctype, name=None, filters=None, parent=None):
     
 	return frappe.get_doc(doctype, name).as_dict()
 
-
+@frappe.whitelist()
+def get_total_margin(comparison_name):
+    comparison_doc = frappe.get_doc("Comparison", comparison_name)
+    if not comparison_doc:
+        frappe.throw(f"Comparison '{comparison_name}' not found.")
+    items = frappe.get_list("Comparison Item Card",
+                            filters={"comparison": comparison_name},
+                            fields=["total_with_margin"])
+    
+    return items

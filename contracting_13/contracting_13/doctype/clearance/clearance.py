@@ -692,7 +692,7 @@ def get_grand_clearance(source_name, target_doc=None, ignore_permissions=False):
 
 	sql = f""" 
 	SELECT name From tabClearance  
-	WHERE   docstatus = 1 and invoiced=0 and paid=0 
+	WHERE   docstatus = 1 and paid=0 
 	and comparison = '{comparison.name}' and is_grand_clearance =0
 	"""
 
