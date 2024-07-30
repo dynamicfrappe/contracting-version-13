@@ -107,6 +107,7 @@ class Clearance(Document):
 	def validate(self) :
 		total_price = 0 
 		total_after_tax = 0 
+		total_amount = 0
 		self.calculate_totals()
 		self.calculate_deductions()
 		self.calculate_insurance()	
@@ -114,8 +115,9 @@ class Clearance(Document):
 			self.total_after_tax = self.total
 			for  i in  self.item_tax :
 				i.tax_amount  = (i.rate /100) * self.total_after_tax
-				i.total = i.tax_amount  +self.total_after_tax
-				self.total_after_tax = self.total_after_tax + i.tax_amount
+				i.total = i.tax_amount  + self.total_after_tax
+				total_amount += i.tax_amount
+		self.total_after_tax = self.total_after_tax + total_amount
 		self.tax_total = self.total_after_tax - self.total
 		self.grand_total = (self.total_after_tax) -float(self.total_insurances or 0 )
 	def save(self):
