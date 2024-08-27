@@ -366,6 +366,7 @@ frappe.ui.form.on("Clearance", {
       row.rate = tax_table[i].rate;
       row.tax_amount = tax_table[i].tax_amount;
       row.total = tax_table[i].total;
+      row.cost_center = tax_table[i].cost_center;
     }
     //////////////// update down payment and payment insurance
     let down_payment_insurance =

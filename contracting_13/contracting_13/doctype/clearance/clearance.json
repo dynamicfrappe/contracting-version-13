@@ -446,7 +446,8 @@
    "fieldname": "taxes_type",
    "fieldtype": "Select",
    "label": "Taxes Type",
-   "options": "Purchase Taxes and Charges Template\nSales Taxes and Charges Template"
+   "options": "Purchase Taxes and Charges Template\nSales Taxes and Charges Template",
+   "hidden": 1
   }
  ],
  "is_submittable": 1,
