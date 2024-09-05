@@ -14,7 +14,7 @@ def add_sales_order_script():
 def create_domian():
 	if not frappe.db.exists("Domain" , "Contracting"):
 		doc = frappe.new_doc("Domain")
-		doc.domain = "Conctracting"
+		doc.domain = "Contracting"
 		doc.insert()
 		frappe.db.commit()
 
