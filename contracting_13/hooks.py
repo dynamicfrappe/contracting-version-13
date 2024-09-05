@@ -116,4 +116,8 @@ doc_events = {
 
 
 
-before_migrate = 'contracting_13.contracting_13.add_client_Sccript.create_item_account_dimension'
+before_migrate = [
+	'contracting_13.contracting_13.add_client_Sccript.create_item_account_dimension',
+	]
+
+after_migrate = ['contracting_13.contracting_13.add_client_Sccript.create_domian' ]

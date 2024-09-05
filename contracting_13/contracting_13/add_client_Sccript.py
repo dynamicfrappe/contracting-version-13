@@ -11,6 +11,15 @@ def add_sales_order_script():
 
 
 @frappe.whitelist()
+def create_domian():
+	if not frappe.db.exists("Domain" , "Contracting"):
+		doc = frappe.new_doc("Domain")
+		doc.domain = "Conctracting"
+		doc.insert()
+		frappe.db.commit()
+
+
+@frappe.whitelist()
 def create_item_account_dimension():
 	try :
 		if not frappe.db.exists("Accounting Dimension",  "Item") :
