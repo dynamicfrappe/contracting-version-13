@@ -67,7 +67,6 @@ data = {
                 "fieldtype": "Attach Image",
                 "insert_after": "description",
                 "label": "Attach Image",
-                "in_list_view": "1",
             },
         ],
         
