@@ -1,0 +1,332 @@
+{
+ "allow_rename": 1,
+ "autoname": "naming_series:",
+ "creation": "2021-11-21 18:14:04.899692",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "company",
+  "series_columns",
+  "posting_date",
+  "naming_series",
+  "section_break_2",
+  "comparison",
+  "project",
+  "project_account",
+  "column_break_3",
+  "insurance_rate",
+  "insurance_amount",
+  "insurance_paid",
+  "column_break_6",
+  "total_amount",
+  "insurances_on_deleviery",
+  "delevery_insurance_amount",
+  "expenses_insurances",
+  "payed_in_clearance_insurances",
+  "total_insurance",
+  "status_section",
+  "current_status",
+  "terms_sheet_section_section",
+  "terms_sheet_amount",
+  "terms_paid",
+  "column_break_21",
+  "terms_sheet_cost_center",
+  "risk_insurance_section",
+  "insurances",
+  "risk_insurance_amount",
+  "risk_insurance_account",
+  "risk_insurance_cost_center",
+  "section_break_31",
+  "states_template",
+  "payment_details_section",
+  "mode_of_payment",
+  "payment_account",
+  "reference_no",
+  "reference_date",
+  "notes_section",
+  "user_notes",
+  "section_break_33",
+  "amended_from"
+ ],
+ "fields": [
+  {
+   "default": "Today",
+   "fieldname": "posting_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Posting Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "comparison",
+   "fieldtype": "Link",
+   "label": "Comparison",
+   "options": "Comparison"
+  },
+  {
+   "fieldname": "status_section",
+   "fieldtype": "Section Break",
+   "label": "Status"
+  },
+  {
+   "fieldname": "current_status",
+   "fieldtype": "Select",
+   "label": "Current Status",
+   "options": "Pending\nApproved\nRejected"
+  },
+  {
+   "fieldname": "notes_section",
+   "fieldtype": "Section Break",
+   "label": "Notes"
+  },
+  {
+   "fieldname": "user_notes",
+   "fieldtype": "Text Editor",
+   "label": "User Notes"
+  },
+  {
+   "fetch_from": "comparison.grand_total",
+   "fetch_if_empty": 1,
+   "fieldname": "total_amount",
+   "fieldtype": "Currency",
+   "label": "Total Amount",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "comparison.insurance_value_rate",
+   "fetch_if_empty": 1,
+   "fieldname": "insurance_rate",
+   "fieldtype": "Percent",
+   "hidden": 1,
+   "label": "Insurance Rate(%)",
+   "read_only": 1
+  },
+  {
+   "fieldname": "insurance_amount",
+   "fieldtype": "Currency",
+   "hidden": 1,
+   "label": "Insurance Amount",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_3",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_6",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_2",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Tender",
+   "print_hide": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "project",
+   "fieldtype": "Link",
+   "label": "Project",
+   "options": "Project"
+  },
+  {
+   "allow_on_submit": 1,
+   "fetch_from": "comparison.total_insurance",
+   "fieldname": "total_insurance",
+   "fieldtype": "Read Only",
+   "label": "Total Insurance",
+   "read_only": 1
+  },
+  {
+   "fieldname": "terms_sheet_section_section",
+   "fieldtype": "Section Break",
+   "label": "Terms Sheet Section"
+  },
+  {
+   "default": "0",
+   "fieldname": "terms_sheet_amount",
+   "fieldtype": "Currency",
+   "label": "Terms Sheet Amount"
+  },
+  {
+   "fieldname": "project_account",
+   "fieldtype": "Link",
+   "label": "Terms Sheet Account",
+   "options": "Account"
+  },
+  {
+   "fieldname": "terms_sheet_cost_center",
+   "fieldtype": "Link",
+   "label": "Terms Cost Center",
+   "options": "Cost Center"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "mode_of_payment",
+   "fieldtype": "Link",
+   "label": "Mode Of Payment",
+   "options": "Mode of Payment"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "payment_account",
+   "fieldtype": "Link",
+   "label": "Payment Account",
+   "options": "Account",
+   "read_only": 1
+  },
+  {
+   "allow_on_submit": 1,
+   "depends_on": "eval:doc.mode_of_payment != \"Cash\" && doc.mode_of_payment",
+   "fieldname": "reference_no",
+   "fieldtype": "Data",
+   "label": "Cheque/Reference No"
+  },
+  {
+   "allow_on_submit": 1,
+   "depends_on": "eval:doc.mode_of_payment != \"Cash\" && doc.mode_of_payment",
+   "fieldname": "reference_date",
+   "fieldtype": "Date",
+   "label": "Cheque/Reference Date"
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "options": "Company"
+  },
+  {
+   "fieldname": "series_columns",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "naming_series",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Series",
+   "options": "Ten-.YYYY.-.MM.-.DD.-.###",
+   "reqd": 1
+  },
+  {
+   "allow_on_submit": 1,
+   "default": "0",
+   "fieldname": "terms_paid",
+   "fieldtype": "Check",
+   "label": "Terms Sheet Paid",
+   "read_only": 1
+  },
+  {
+   "allow_on_submit": 1,
+   "default": "0",
+   "fieldname": "insurance_paid",
+   "fieldtype": "Check",
+   "label": "Insurance Paid",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_21",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "payment_details_section",
+   "fieldtype": "Section Break",
+   "label": "Payment Details"
+  },
+  {
+   "fieldname": "section_break_31",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "states_template",
+   "fieldtype": "Table",
+   "label": "Tender States Template",
+   "options": "Tender States Template",
+   "reqd": 1
+  },
+  {
+   "fieldname": "section_break_33",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "risk_insurance_section",
+   "fieldtype": "Section Break",
+   "label": "Insurance"
+  },
+  {
+   "fieldname": "risk_insurance_amount",
+   "fieldtype": "Currency",
+   "hidden": 1,
+   "label": "Risk Insurance Amount"
+  },
+  {
+   "fieldname": "risk_insurance_account",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "label": "Risk Insurance Account",
+   "options": "Account"
+  },
+  {
+   "fieldname": "risk_insurance_cost_center",
+   "fieldtype": "Link",
+   "label": "Risk Insurance Cost Center",
+   "options": "Cost Center",
+   "read_only": 1
+  },
+  {
+   "fieldname": "insurances",
+   "fieldtype": "Table",
+   "label": "Insurances",
+   "options": "Tender Incurance"
+  },
+  {
+   "fieldname": "insurances_on_deleviery",
+   "fieldtype": "Read Only",
+   "label": "Delevery Insurance value Rate (%)"
+  },
+  {
+   "fieldname": "expenses_insurances",
+   "fieldtype": "Read Only",
+   "label": "Expenses Insurances"
+  },
+  {
+   "fieldname": "payed_in_clearance_insurances",
+   "fieldtype": "Read Only",
+   "label": "Payed in Clearance insurances"
+  },
+  {
+   "fieldname": "delevery_insurance_amount",
+   "fieldtype": "Read Only",
+   "label": "Delevery Insurance Amount"
+  }
+ ],
+ "is_submittable": 1,
+ "modified": "2022-05-08 15:11:33.521769",
+ "modified_by": "Administrator",
+ "module": "Contracting 13",
+ "name": "Tender",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}

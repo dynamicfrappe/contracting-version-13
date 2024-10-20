@@ -1,0 +1,30 @@
+{
+ "creation": "2022-05-12 10:22:17.992866",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "clearance"
+ ],
+ "fields": [
+  {
+   "fieldname": "clearance",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Clearance",
+   "options": "Clearance",
+   "read_only": 1
+  }
+ ],
+ "istable": 1,
+ "modified": "2022-05-12 12:44:35.361053",
+ "modified_by": "Administrator",
+ "module": "Contracting 13",
+ "name": "Grand Clearance Details",
+ "owner": "Administrator",
+ "permissions": [],
+ "quick_entry": 1,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}
