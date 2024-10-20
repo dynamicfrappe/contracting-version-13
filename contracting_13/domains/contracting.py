@@ -29,6 +29,7 @@ data = {
                 "fieldtype": "Data",
                 "insert_after": "project",
                 "label": "Project Name",
+                "read_only": 1,
                 "fetch_from":"project.project_name"
             },
             {
