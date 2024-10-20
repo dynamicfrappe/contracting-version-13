@@ -25,6 +25,13 @@ data = {
 
             },
             {
+                "fieldname": "project_name",
+                "fieldtype": "Data",
+                "insert_after": "project",
+                "label": "Project Name",
+                "fetch_from":"project.project_name"
+            },
+            {
                 "fieldname": "comparison_item",
                 "fieldtype": "Link",
                 "insert_after": "comparison",
@@ -52,6 +59,14 @@ data = {
                 "fieldtype": "Link",
                 "insert_after": "project",
                 "options": "Cost Center",
+            },
+        ],
+        "Material Request Item":[
+            {
+                "fieldname": "attach_image",
+                "fieldtype": "Image",
+                "insert_after": "description",
+                "label": "Attach Image",
             },
         ],
         
