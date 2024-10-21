@@ -69,6 +69,13 @@ data = {
                 "insert_after": "description",
                 "label": "Attach Image",
             },
+            {
+                "fieldname": "image_view",
+                "fieldtype": "Image",
+                "insert_after": "attach_image",
+                "label": "Image View",
+                "options": "attach_image",
+            },
         ],
         
         'Quotation':[
