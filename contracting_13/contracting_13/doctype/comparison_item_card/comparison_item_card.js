@@ -14,8 +14,15 @@ frappe.ui.form.on('Comparison Item Card', {
 	},
     refresh: function(frm) {
         frm.events.setup_quiries(frm)
-        frm.events.upload_download_data(frm)
+        // frm.events.upload_download_data(frm)
         frm.events.setup_function(frm)
+        frm.events.upload_data_file(frm , "services")
+        frm.events.upload_data_file(frm , "items")
+        frm.events.upload_data_file(frm , "cost")
+
+        frm.events.export_data_file(frm , "items" )
+        frm.events.export_data_file(frm , "services" )
+        frm.events.export_data_file(frm , "cost" )
         
 	},
     get_filters: function(frm){
@@ -46,6 +53,37 @@ frappe.ui.form.on('Comparison Item Card', {
         }      
 
     },
+    export_data_file: function(frm , table_name) {
+        frm.fields_dict[table_name].grid.add_custom_button(
+            __("Export Excel"),
+            function() {             
+                frappe.call({
+                    method: "contracting_13.contract_api.export_data_file",
+                    args: {
+                        doctype: frm.doc.doctype,
+                        table: table_name,
+                        self: frm.doc
+                    },
+                    callback: function(r) {                        
+                        if (r.message) {
+                            let file_url = r.message.file_url;                            
+                            if (file_url) {
+                                window.open(file_url);
+                            } else {
+                                console.error('No file_url found in the response');
+                            }
+                        } else {
+                            console.error('No message in the response');
+                        }
+                    },
+                    error: function(err) {
+                        console.error('Error during frappe.call:', err);
+                    }
+                });
+            }
+        );
+    },
+    
     setup_function: function(frm) {
         console.log("Setup")
         if (frm.doc.docstatus == 1) {
@@ -67,81 +105,130 @@ frappe.ui.form.on('Comparison Item Card', {
             );
         }
     },
-    upload_download_data:function(frm){
-        //download_data
-        frm.fields_dict["items"].grid.add_custom_button(
-            __("Download Data"),
-            function() {
-              // console.log("frm.items");contracting/contracting/contract_api.py
-              frappe.call({
-                method: "contracting_13.contract_api.export_data_to_file_fields",
-                args: {
-                  items: frm.doc.items,
-                  colms:['item','item_name','uom','qty','unit_price','total_amount']
-                },
-                callback: function(r) {
-                  if (r.message){
-                    console.log(r.message)
-                      let file = r.message.file 
-                      let file_url = r.message.file_url 
-                    //   window.open(file_url);
-                      file_url = file_url.replace(/#/g, '%23');
-                      window.open(file_url);
-                  }
-                },
-              });
+    upload_data_file:function(frm , table_name){
+		frm.fields_dict[table_name].grid.add_custom_button(
+			__("Upload Xlxs Data"),
+			function() {
+				let d = new frappe.ui.Dialog({
+					title: "Enter details",
+					fields: [
+					{
+						label: "Excel File",
+						fieldname: "first_name",
+						fieldtype: "Attach",
+					},
+					],
+					primary_action_label: "Submit",
+					primary_action(values) {
+					console.log(`values===>${JSON.stringify(values)}`);
+					var f = values.first_name;
+					frappe.call({
+						method:"contracting_13.contract_api.get_data_from_template_file",
+						args: {
+						file_url: values.first_name
+						// file: values.first_name,
+						// colms:['item_code','qty',]
+						},
+						callback: function(r) {
+						if (r.message) {
+							console.log(r.message)
+							frm.clear_table(table_name);
+							frm.refresh_fields(table_name);
+							r.message.forEach(object => {
+							var row = frm.add_child(table_name);
+							Object.entries(object).forEach(([key, value]) => {
+								 console.log(`${key}: ${value}`);
+								row[key] = value;
+							});
+							 });
+							frm.refresh_fields(table_name);
+						}
+						},
+					});
+					d.hide();
+					},
+				});
+				d.show();
+			}).addClass("btn-success");
+			frm.fields_dict["items"].grid.grid_buttons
+			.find(".btn-custom")
+			.removeClass("btn-default")
+	},
+    // upload_download_data:function(frm){
+    //     //download_data
+    //     frm.fields_dict["items"].grid.add_custom_button(
+    //         __("Download Data"),
+    //         function() {
+    //           // console.log("frm.items");contracting/contracting/contract_api.py
+    //           frappe.call({
+    //             method: "contracting_13.contract_api.export_data_to_file_fields",
+    //             args: {
+    //               items: frm.doc.items,
+    //               colms:['item','item_name','uom','qty','unit_price','total_amount']
+    //             },
+    //             callback: function(r) {
+    //               if (r.message){
+    //                 console.log(r.message)
+    //                   let file = r.message.file 
+    //                   let file_url = r.message.file_url 
+    //                 //   window.open(file_url);
+    //                   file_url = file_url.replace(/#/g, '%23');
+    //                   window.open(file_url);
+    //               }
+    //             },
+    //           });
       
-            }
-          ).addClass("btn-primary");
+    //         }
+    //       ).addClass("btn-primary");
         
-          frm.fields_dict["items"].grid.add_custom_button(
-            __("Upload Data"),
-            function() {
-                let d = new frappe.ui.Dialog({
-                    title: "Enter details",
-                    fields: [
-                      {
-                        label: "Excel File",
-                        fieldname: "first_name",
-                        fieldtype: "Attach",
-                      },
-                    ],
-                    primary_action_label: "Submit",
-                    primary_action(values) {
-                    //   console.log(`values===>${JSON.stringify(values)}`);
-                      var f = values.first_name;
-                      frappe.call({
-                        method:"contracting_13.contract_api.upload_data_comaprsion_item_card",
-                        args: {
-                          file: values.first_name,
-                          colms:['item','item_name','uom','qty','unit_price','total_amount']
-                        },
-                        callback: function(r) {
-                          if (r.message) {
-                            frm.clear_table("items");
-                            frm.refresh_fields("items");
-                            r.message.forEach((element) => {
-                              var row = frm.add_child("items");
-                              row.item = element.item;
-                              row.item_name = element.item_name;
-                              row.uom = element.uom;
-                              row.qty = element.qty;
-                              row.unit_price = element.unit_price;
-                              row.total_amount = element.total_amount;
-                            });
-                            frm.refresh_fields("items");
-                          }
-                        },
-                      });
-                    //   d.hide();
-                    },
-                  });
-                  d.show();
-            }).addClass("btn-success");
-            frm.fields_dict["items"].grid.grid_buttons
-            .find(".btn-custom")
-            .removeClass("btn-default")
-    },
+    //       frm.fields_dict["items"].grid.add_custom_button(
+    //         __("Upload Data"),
+    //         function() {
+    //             let d = new frappe.ui.Dialog({
+    //                 title: "Enter details",
+    //                 fields: [
+    //                   {
+    //                     label: "Excel File",
+    //                     fieldname: "first_name",
+    //                     fieldtype: "Attach",
+    //                   },
+    //                 ],
+    //                 primary_action_label: "Submit",
+    //                 primary_action(values) {
+    //                 //   console.log(`values===>${JSON.stringify(values)}`);
+    //                   var f = values.first_name;
+    //                   frappe.call({
+    //                     method:"contracting_13.contract_api.upload_data_comaprsion_item_card",
+    //                     args: {
+    //                       file: values.first_name,
+    //                       colms:['item','item_name','uom','qty','unit_price','total_amount']
+    //                     },
+    //                     callback: function(r) {
+    //                       if (r.message) {
+    //                         frm.clear_table("items");
+    //                         frm.refresh_fields("items");
+    //                         r.message.forEach((element) => {
+    //                           var row = frm.add_child("items");
+    //                           row.item = element.item;
+    //                           row.item_name = element.item_name;
+    //                           row.uom = element.uom;
+    //                           row.qty = element.qty;
+    //                           row.unit_price = element.unit_price;
+    //                           row.total_amount = element.total_amount;
+    //                         });
+    //                         frm.refresh_fields("items");
+    //                       }
+    //                     },
+    //                   });
+    //                 //   d.hide();
+    //                 },
+    //               });
+    //               d.show();
+    //         }).addClass("btn-success");
+    //         frm.fields_dict["items"].grid.grid_buttons
+    //         .find(".btn-custom")
+    //         .removeClass("btn-default")
+    // },
     setup_quiries:function(frm){
         frm.set_query("item", "items", function () {
             return {
