@@ -8,7 +8,129 @@ frappe.ui.form.on("Material Request",{
   },
 
   refresh:function(frm){
-    frm.events.setup_comparsion_query(frm)
+    frm.events.setup_comparsion_query(frm);
+    // Hide standard Create button 
+    frm.page.remove_inner_button('Create');
+    // Make another Create_ Button to override the standard
+    frm.events.make_custom_buttons(frm);
+    // Check if the document is submitted
+    if (frm.doc.docstatus == 1) {
+
+      // Allow row selection (checkboxes) in the Items table
+      frm.fields_dict['items'].grid.wrapper.find('input[type=checkbox]').prop('disabled', false);
+
+
+      // Hide row delete and add buttons to prevent modifications
+      frm.fields_dict['items'].grid.wrapper.find('.grid-remove-rows').hide();  // Hide the "remove all rows" button
+      frm.fields_dict['items'].grid.wrapper.find('.grid-add-row').hide();      // Hide the "add row" button
+      frm.fields_dict['items'].grid.wrapper.find('.grid-delete-row').hide();   // Hide individual row delete buttons
+      
+    }
+  },
+
+  make_custom_buttons: function(frm) {
+		if (frm.doc.docstatus == 1 && frm.doc.status != 'Stopped') {
+			let precision = frappe.defaults.get_default("float_precision");
+			if (flt(frm.doc.per_ordered, precision) < 100) {
+
+				if (frm.doc.material_request_type === "Purchase") {
+					frm.add_custom_button(__('Purchase Order'),
+						() => frm.events.make_purchase_order(frm), __('Create_'));
+				}
+
+				if (frm.doc.material_request_type === "Purchase") {
+					frm.add_custom_button(__("Request for Quotation"),
+						() => frm.events.make_request_for_quotation(frm), __('Create_'));
+				}
+
+				if (frm.doc.material_request_type === "Purchase") {
+					frm.add_custom_button(__("Supplier Quotation"),
+						() => frm.events.make_supplier_quotation(frm), __('Create_'));
+				}
+
+				frm.page.set_inner_btn_group_as_primary(__('Create_'));
+
+			}
+		}
+  },
+
+  make_purchase_order: function(frm) {
+		frappe.prompt(
+			{
+				label: __('For Default Supplier (Optional)'),
+				fieldname:'default_supplier',
+				fieldtype: 'Link',
+				options: 'Supplier',
+				description: __('Select a Supplier from the Default Suppliers of the items below. On selection, a Purchase Order will be made against items belonging to the selected Supplier only.'),
+				get_query: () => {
+					return{
+						query: "erpnext.stock.doctype.material_request.material_request.get_default_supplier_query",
+						filters: {'doc': frm.doc.name}
+					}
+				}
+			},
+			(values) => {
+        // Get the selected items from the Items table
+        let selected_items = $.map(frm.fields_dict["items"].grid.get_selected_children(), function(d) {
+          return d.name;
+        });
+
+        if (selected_items.length === 0) {
+            frappe.msgprint(__('Please select items to include in the Request for Quotation.'));
+            return;
+        }
+
+				frappe.model.open_mapped_doc({
+					method: "erpnext.stock.doctype.material_request.material_request.make_purchase_order",
+					frm: frm,
+					args: { default_supplier: values.default_supplier , filtered_items: selected_items},
+					run_link_triggers: true
+				});
+			},
+			__('Enter Supplier'),
+			__('Create')
+		)
+	},
+
+	make_request_for_quotation: function(frm) {
+    // Get the selected items from the Items table
+    let selected_items = $.map(frm.fields_dict["items"].grid.get_selected_children(), function(d) {
+      return d.name;
+    });
+
+    if (selected_items.length === 0) {
+        frappe.msgprint(__('Please select items to include in the Request for Quotation.'));
+        return;
+    }
+
+    // Call the server-side method to create the RFQ
+    frappe.model.open_mapped_doc({
+        method: "erpnext.stock.doctype.material_request.material_request.make_request_for_quotation",
+        frm: frm,
+        args: { filtered_items: selected_items },  // Pass selected item names
+        run_link_triggers: true
+    });
+		
+	},
+
+	make_supplier_quotation: function(frm) {
+    // Get the selected items from the Items table
+    let selected_items = $.map(frm.fields_dict["items"].grid.get_selected_children(), function(d) {
+      return d.name;
+    });
+
+    if (selected_items.length === 0) {
+        frappe.msgprint(__('Please select items to include in the Request for Quotation.'));
+        return;
+    }
+
+    // Call the server-side method to create the RFQ
+    frappe.model.open_mapped_doc({
+        method: "erpnext.stock.doctype.material_request.material_request.make_supplier_quotation",
+        frm: frm,
+        args: { filtered_items: selected_items },  // Pass selected item names
+        run_link_triggers: true
+    });
     
   },
 

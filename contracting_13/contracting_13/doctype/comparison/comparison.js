@@ -52,6 +52,14 @@ frappe.ui.form.on("Comparison", {
   },
   refresh: (frm) => {
 
+    frm.set_query("purchase_taxes_and_charges_template", function() {
+      return {
+          "filters": {
+              "company": frm.doc.company
+          }
+      };
+    });
+    
     frm.events.export_data_file(frm , "item")
     frm.events.upload_data_file(frm , "item")
 

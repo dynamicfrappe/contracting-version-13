@@ -212,7 +212,7 @@
   {
    "fieldname": "purchase_taxes_and_charges_template",
    "fieldtype": "Dynamic Link",
-   "label": "Purchase Taxes and Charges Template",
+   "label": "Taxes and Charges Template",
    "options": "taxes_type"
   },
   {
