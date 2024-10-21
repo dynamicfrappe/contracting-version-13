@@ -112,6 +112,9 @@ doc_events = {
 		"Purchase Order": {
 		"on_submit": "contracting_13.contracting_13.doctype.purchase_order.purchase_order.update_comparison",
 		"on_cancel": "contracting_13.contracting_13.doctype.purchase_order.purchase_order.update_comparison",}  ,
+		"Purchase Invoice" : {
+			"validate": "contracting_13.controllers.purchase_invoice.validate_purchase_invoice"
+		} 
 }
 
 

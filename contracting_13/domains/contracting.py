@@ -13,6 +13,22 @@ data = {
                 "insert_after":"multi_currency", 
             },
         ],
+        'Supplier':[
+            {
+                "fieldtype": "Section Break",
+                "fieldname":"purchase_invoice_section",
+                "insert_after":"default_price_list", 
+            },
+            {
+                "label":_("Supplier Invoice Table"),
+                "fieldname":"supplier_invoice_table",
+                "fieldtype":"Table",
+                "options":"Supplier Invoice",
+                "insert_after":"purchase_invoice_section", 
+                "read_only" :1
+            },
+            
+        ],
         "Material Request":[
             {
                 "fieldname": "comparison",
