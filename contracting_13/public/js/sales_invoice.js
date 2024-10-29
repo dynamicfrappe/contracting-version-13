@@ -1,12 +1,12 @@
 frappe.ui.form.on("Sales Invoice", {
  
   refresh: function (frm) {
-    frm.events.get_cost_centrt(frm)
+    // frm.events.get_cost_centrt(frm)
     },
      
   project:function(frm){
     if(frm.doc.project){
-        frm.events.get_cost_centrt(frm)
+        // frm.events.get_cost_centrt(frm)
     }
   },
 
