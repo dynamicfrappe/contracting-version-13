@@ -1,9 +1,10 @@
 
-The entire App is needed to be moved to version 15 in addition to specific edits and customizations:
+The entire App is needed to be transferred to version 15 in addition to specific edits and customizations:
 
     1- Restructure Tender doctype as the one in attached image in the documentation sent.
-    2- Abilitiy of Creating Clearence from Purchase Order.
-    3- In this point I'll describe the current behavior and what is the problem in that part in addition to our recommendations for helping in solving it.
+    2- When creating Comparison from Tender, all common fields should be fetched from the Tender.
+    3- Abilitiy of Creating Clearence from Purchase Order.
+    4- In this point I'll describe the current behavior and what is the problem in that part in addition to our recommendations for helping in solving it.
 
     In the Comparison doctype we have a child table "Tender States Template",
         we insert each row, state and corresponding percent to be used later in each clearence item,
