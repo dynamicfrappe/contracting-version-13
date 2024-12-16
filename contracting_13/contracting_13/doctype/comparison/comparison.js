@@ -62,7 +62,7 @@ frappe.ui.form.on("Comparison", {
     });
     
     frm.events.export_data_file(frm , "item")
-    frm.events.upload_data_file(frm , "item")
+    // frm.events.upload_data_file(frm , "item")
 
 
     frm.events.setup_function(frm)
