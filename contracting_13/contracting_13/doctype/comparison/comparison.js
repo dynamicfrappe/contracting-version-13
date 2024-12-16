@@ -54,9 +54,10 @@ frappe.ui.form.on("Comparison", {
 
     frm.set_query("purchase_taxes_and_charges_template", function() {
       return {
-          "filters": {
-              "company": frm.doc.company
-          }
+        filters: [
+          ["company", "=", frm.doc.company],
+          ["is_group", "=", 0],
+        ],
       };
     });
     
@@ -746,9 +747,12 @@ frappe.ui.form.on("Comparison", {
 				});
 				d.show();
 			}).addClass("btn-success");
-			frm.fields_dict["items"].grid.grid_buttons
-			.find(".btn-custom")
-			.removeClass("btn-default")
+      if(frm.fields_dict(table_name)){
+        frm.fields_dict[table_name].grid.grid_buttons
+        .find(".btn-custom")
+        .removeClass("btn-default")
+      }
+        
 	},
   validate: (frm) => {
     //frm.events.clac_taxes(frm)
