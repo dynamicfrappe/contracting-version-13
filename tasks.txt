@@ -1,0 +1,23 @@
+
+The entire App is needed to be transferred to version 15 in addition to specific edits and customizations:
+
+    1- Restructure Tender doctype as the one in attached image in the documentation sent.
+    2- When creating Comparison from Tender, all common fields should be fetched from the Tender.
+    3- Abilitiy of Creating Clearence from Purchase Order.
+    4- In this point I'll describe the current behavior and what is the problem in that part in addition to our recommendations for helping in solving it.
+
+    In the Comparison doctype we have a child table "Tender States Template",
+        we insert each row, state and corresponding percent to be used later in each clearence item,
+
+        This percents are set to be applied on all items as same as each other,
+        The change we want to made is the given percent may be changed from item to another.
+
+        our recommendations to solve:
+        1- Adding 4/5 fields for each state in addition to 4/5 fields fot their percents, inside the comparison items.
+
+        2- Solve it by adding new column inside the child table for "Item Code" and linked with "Item" doctype,
+        then we can repeat the states with each "Item",
+        && in the clearence items, adding a filter on the field "clearance_state" to filter by Clearence Item (Item).
+
+    We are open for any other solutions.
+
