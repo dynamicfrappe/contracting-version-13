@@ -56,7 +56,6 @@ frappe.ui.form.on("Comparison", {
       return {
         filters: [
           ["company", "=", frm.doc.company],
-          ["is_group", "=", 0],
         ],
       };
     });
