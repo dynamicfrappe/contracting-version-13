@@ -2,7 +2,7 @@
 // For license information, please see license.txt
 
 frappe.ui.form.on("Clearance", {
-	setup(frm) {
+	refresh(frm) {
 		let parent = frm.doc.tender ? frm.doc.tender : frm.doc.comparison
 		console.log(parent)
 		frm.fields_dict["items"].grid.get_field("clearance_state").get_query =
@@ -74,8 +74,8 @@ frappe.ui.form.on("Clearance", {
 				],
 			};
 		});
-	},
-	refresh: (frm) => {
+	// },
+	// refresh: (frm) => {
 		frm.events.upload_data_file(frm , "items")
 		frm.events.upload_data_file(frm , "item_tax")
 		frm.events.upload_data_file(frm , "deductions")
