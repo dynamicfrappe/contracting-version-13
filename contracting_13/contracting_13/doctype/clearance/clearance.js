@@ -205,19 +205,19 @@ frappe.ui.form.on("Clearance", {
 		}
 	},
 	onload(frm) {
-		if (frm.is_new()) {
+		// if (frm.is_new()) {
 
-			// clear item withous state 
+		// 	// clear item withous state 
 
-			(frm.doc.items || []).forEach((row) => {
+		// 	(frm.doc.items || []).forEach((row) => {
 			
 				
-				frm.events.get_item_price(frm, row.doctype, row.name);
+		// 		frm.events.get_item_price(frm, row.doctype, row.name);
 
-				frm.events.calc_total(frm, row.doctype, row.name);
-			});
-			frm.events.clac_taxes(frm);
-		}
+		// 		frm.events.calc_total(frm, row.doctype, row.name);
+		// 	});
+		// 	frm.events.clac_taxes(frm);
+		// }
 	},
 	validate: (frm) => {
 		frm.events.clac_taxes(frm);
