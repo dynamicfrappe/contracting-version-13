@@ -451,11 +451,11 @@ frappe.ui.form.on("Clearance", {
 		// 	},
 		// })
 
-		frappe.db.get_value('Project', frm.doc.project, 'cost_center')
-			.then(r => {
-				frm.set_value("cost_center", r.message.cost_center);
-				frm.refresh_field("cost_center");
-			})
+		// frappe.db.get_value('Project', frm.doc.project, 'cost_center')
+		// 	.then(r => {
+		// 		frm.set_value("cost_center", r.message.cost_center);
+		// 		frm.refresh_field("cost_center");
+		// 	})
 	},
 	upload_data_file:function(frm , table_name){
 		frm.fields_dict[table_name].grid.add_custom_button(
