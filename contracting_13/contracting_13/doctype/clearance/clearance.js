@@ -75,14 +75,14 @@ frappe.ui.form.on("Clearance", {
 			};
 		});
 	},
-	// refresh: (frm) => {
-	// 	frm.events.upload_data_file(frm , "items")
-	// 	frm.events.upload_data_file(frm , "item_tax")
-	// 	frm.events.upload_data_file(frm , "deductions")
-	// 	frm.events.export_data_file(frm , "items")
-	// 	frm.events.export_data_file(frm , "item_tax")
-	// 	frm.events.export_data_file(frm , "deductions")
-	// 	frm.events.get_cost_centrt(frm)
+	refresh: (frm) => {
+		frm.events.upload_data_file(frm , "items")
+		frm.events.upload_data_file(frm , "item_tax")
+		frm.events.upload_data_file(frm , "deductions")
+		frm.events.export_data_file(frm , "items")
+		frm.events.export_data_file(frm , "item_tax")
+		frm.events.export_data_file(frm , "deductions")
+		frm.events.get_cost_centrt(frm)
 	// 	frm.fields_dict["insurances"].grid.wrapper.find(".grid-add-row").hide();
 	// 	if (
 	// 		frm.doc.docstatus == 0 
@@ -203,7 +203,7 @@ frappe.ui.form.on("Clearance", {
 	// 			});
 	// 		}
 	// 	}
-	// },
+	},
 	onload(frm) {
 		if (frm.is_new()) {
 
