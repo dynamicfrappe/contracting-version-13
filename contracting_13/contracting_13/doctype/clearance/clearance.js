@@ -2,79 +2,79 @@
 // For license information, please see license.txt
 
 frappe.ui.form.on("Clearance", {
-	// setup(frm) {
-	// 	let parent = frm.doc.tender ? frm.doc.tender : frm.doc.comparison
-	// 	console.log(parent)
-	// 	frm.fields_dict["items"].grid.get_field("clearance_state").get_query =
-	// 		function (doc, cdt, cdn) {
-	// 			return {
-	// 				query:
-	// 					"contracting_13.contracting_13.doctype.clearance.clearance.comparsion_state_get_state_query",
-	// 				filters: { parent: parent },
-	// 			};
-	// 		};
-	// 	frm.set_query("account_head", "item_tax", function () {
-	// 		return {
-	// 			filters: [
-	// 				["company", "=", frm.doc.company],
-	// 				["is_group", "=", 0],
-	// 				[
-	// 					"account_type",
-	// 					"in",
-	// 					[
-	// 						"Tax",
-	// 						"Chargeable",
-	// 						"Income Account",
-	// 						"Expenses Included In Valuation",
-	// 					],
-	// 				],
-	// 			],
-	// 		};
-	// 	});
-	// 	frm.set_query("cost_center", "item_tax", function () {
-	// 		return {
-	// 			filters: [
-	// 				["company", "=", frm.doc.company],
-	// 				["is_group", "=", 0],
-	// 			],
-	// 		};
-	// 	});
-	// 	frm.set_query("account", "deductions", function () {
-	// 		return {
-	// 			filters: [
-	// 				["company", "=", frm.doc.company],
-	// 				["is_group", "=", 0],
-	// 			],
-	// 		};
-	// 	});
-	// 	frm.set_query("account", "insurances", function () {
-	// 		return {
-	// 			filters: [
-	// 				["company", "=", frm.doc.company],
-	// 				["is_group", "=", 0],
-	// 				["root_type", "=", "Asset"],
-	// 			],
-	// 		};
-	// 	});
+	setup(frm) {
+		let parent = frm.doc.tender ? frm.doc.tender : frm.doc.comparison
+		console.log(parent)
+		frm.fields_dict["items"].grid.get_field("clearance_state").get_query =
+			function (doc, cdt, cdn) {
+				return {
+					query:
+						"contracting_13.contracting_13.doctype.clearance.clearance.comparsion_state_get_state_query",
+					filters: { parent: parent },
+				};
+			};
+		frm.set_query("account_head", "item_tax", function () {
+			return {
+				filters: [
+					["company", "=", frm.doc.company],
+					["is_group", "=", 0],
+					[
+						"account_type",
+						"in",
+						[
+							"Tax",
+							"Chargeable",
+							"Income Account",
+							"Expenses Included In Valuation",
+						],
+					],
+				],
+			};
+		});
+		frm.set_query("cost_center", "item_tax", function () {
+			return {
+				filters: [
+					["company", "=", frm.doc.company],
+					["is_group", "=", 0],
+				],
+			};
+		});
+		frm.set_query("account", "deductions", function () {
+			return {
+				filters: [
+					["company", "=", frm.doc.company],
+					["is_group", "=", 0],
+				],
+			};
+		});
+		frm.set_query("account", "insurances", function () {
+			return {
+				filters: [
+					["company", "=", frm.doc.company],
+					["is_group", "=", 0],
+					["root_type", "=", "Asset"],
+				],
+			};
+		});
 
-	// 	frm.set_query("cost_center", "deductions", function () {
-	// 		return {
-	// 			filters: [
-	// 				["company", "=", frm.doc.company],
-	// 				["is_group", "=", 0],
-	// 			],
-	// 		};
-	// 	});
+		frm.set_query("cost_center", "deductions", function () {
+			return {
+				filters: [
+					["company", "=", frm.doc.company],
+					["is_group", "=", 0],
+				],
+			};
+		});
 
-	// 	frm.set_query("cost_center", "items", function () {
-	// 		return {
-	// 			filters: [
-	// 				["company", "=", frm.doc.company],
-	// 				["is_group", "=", 0],
-	// 			],
-	// 		};
-	// 	});
-	// },
+		frm.set_query("cost_center", "items", function () {
+			return {
+				filters: [
+					["company", "=", frm.doc.company],
+					["is_group", "=", 0],
+				],
+			};
+		});
+	},
 	// refresh: (frm) => {
 	// 	frm.events.upload_data_file(frm , "items")
 	// 	frm.events.upload_data_file(frm , "item_tax")
@@ -204,24 +204,24 @@ frappe.ui.form.on("Clearance", {
 	// 		}
 	// 	}
 	// },
-	// onload(frm) {
-	// 	if (frm.is_new()) {
+	onload(frm) {
+		if (frm.is_new()) {
 
-	// 		// clear item withous state 
+			// clear item withous state 
 
-	// 		(frm.doc.items || []).forEach((row) => {
+			(frm.doc.items || []).forEach((row) => {
 			
 				
-	// 			frm.events.get_item_price(frm, row.doctype, row.name);
+				frm.events.get_item_price(frm, row.doctype, row.name);
 
-	// 			frm.events.calc_total(frm, row.doctype, row.name);
-	// 		});
-	// 		frm.events.clac_taxes(frm);
-	// 	}
-	// },
-	// validate: (frm) => {
-	// 	frm.events.clac_taxes(frm);
-	// },
+				frm.events.calc_total(frm, row.doctype, row.name);
+			});
+			frm.events.clac_taxes(frm);
+		}
+	},
+	validate: (frm) => {
+		frm.events.clac_taxes(frm);
+	},
 	comparison: (frm) => {
 		let comparison = frm.doc.comparison;
 		if (comparison) {
