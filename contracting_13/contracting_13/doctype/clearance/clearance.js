@@ -82,7 +82,7 @@ frappe.ui.form.on("Clearance", {
 		frm.events.export_data_file(frm , "items")
 		frm.events.export_data_file(frm , "item_tax")
 		frm.events.export_data_file(frm , "deductions")
-		// frm.events.get_cost_centrt(frm)
+		frm.events.get_cost_centrt(frm)
 		frm.fields_dict["insurances"].grid.wrapper.find(".grid-add-row").hide();
 		if (
 			frm.doc.docstatus == 0 
@@ -436,20 +436,26 @@ frappe.ui.form.on("Clearance", {
 		}
 	},
 	get_cost_centrt:function(frm){
-		frm.call({
-			'method':"frappe.client.get_value",
-			'args': {
-				'doctype': 'Project',
-				'filters': {
-					'name': frm.doc.project
-				},
-				'fieldname':'cost_center'
-			},
-			'callback': function(res){
-					frm.set_value("cost_center", res.message.cost_center)
-					frm.refresh_field("cost_center")
-			},
-		})
+		// frm.call({
+		// 	'method':"frappe.client.get_value",
+		// 	'args': {
+		// 		'doctype': 'Project',
+		// 		'filters': {
+		// 			'name': frm.doc.project
+		// 		},
+		// 		'fieldname':'cost_center'
+		// 	},
+		// 	'callback': function(res){
+		// 			frm.set_value("cost_center", res.message.cost_center);
+		// 			frm.refresh_field("cost_center");
+		// 	},
+		// })
+
+		frappe.db.get_value('Project', frm.doc.project, 'cost_center')
+			.then(r => {
+				frm.set_value("cost_center", res.message.cost_center);
+				frm.refresh_field("cost_center");
+			})
 	},
 	upload_data_file:function(frm , table_name){
 		frm.fields_dict[table_name].grid.add_custom_button(
