@@ -82,127 +82,127 @@ frappe.ui.form.on("Clearance", {
 		frm.events.export_data_file(frm , "items")
 		frm.events.export_data_file(frm , "item_tax")
 		frm.events.export_data_file(frm , "deductions")
-		frm.events.get_cost_centrt(frm)
-	// 	frm.fields_dict["insurances"].grid.wrapper.find(".grid-add-row").hide();
-	// 	if (
-	// 		frm.doc.docstatus == 0 
-	// 	) {
-	// 		frm.add_custom_button(
-	// 			__("Check Insurance"),
-	// 			function () {
-	// 				frm.call({
-	// 					method: "get_comparison_insurance",
-	// 					doc: frm.doc,
-	// 					callback: function (r) {
-	// 						frm.refresh_field("insurances");
-	// 						frm.refresh_field("total_insurances");
-	// 					},
-	// 				});
-	// 			},
-	// 			__("Actions")
-	// 		);
-	// 	}
-	// 	if (frm.doc.docstatus == 1) {
-	// 		if (!frm.doc.paid && frm.doc.is_grand_clearance) {
-	// 			frm.add_custom_button(
-	// 				__("Payment Entry"),
-	// 				function () {
-	// 					frappe.call({
-	// 						method: "create_payment_entry",
-	// 						doc: frm.doc,
-	// 					});
-	// 				},
-	// 				__("Create")
-	// 			);
-	// 		}
+		// frm.events.get_cost_centrt(frm)
+		frm.fields_dict["insurances"].grid.wrapper.find(".grid-add-row").hide();
+		if (
+			frm.doc.docstatus == 0 
+		) {
+			frm.add_custom_button(
+				__("Check Insurance"),
+				function () {
+					frm.call({
+						method: "get_comparison_insurance",
+						doc: frm.doc,
+						callback: function (r) {
+							frm.refresh_field("insurances");
+							frm.refresh_field("total_insurances");
+						},
+					});
+				},
+				__("Actions")
+			);
+		}
+		if (frm.doc.docstatus == 1) {
+			if (!frm.doc.paid && frm.doc.is_grand_clearance) {
+				frm.add_custom_button(
+					__("Payment Entry"),
+					function () {
+						frappe.call({
+							method: "create_payment_entry",
+							doc: frm.doc,
+						});
+					},
+					__("Create")
+				);
+			}
 
-	// 		if (frm.doc.clearance_type == "incoming") {
-	// 			frm.call({
-	// 				method: "can_create_invoice",
-	// 				doc: frm.doc,
-	// 				args: {
-	// 					doctype: "Purchase Invoice",
-	// 				},
-	// 				callback: function (r) {
-	// 					if (r.message) {
-	// 						frm.add_custom_button(
-	// 							__("Purchase Invoice"),
-	// 							function () {
-	// 								frappe.model.open_mapped_doc({
-	// 									method:
-	// 										"contracting_13.contracting_13.doctype.clearance.clearance.clearance_make_purchase_invoice",
-	// 									frm: frm,
-	// 								});
-	// 							},
-	// 							__("Create")
-	// 						);
-	// 					}
-	// 				},
-	// 			});
-	// 		}
-	// 		if (frm.doc.clearance_type == "InComing" && !frm.doc.is_sub_clearance) {
-	// 			frm.call({
-	// 				method: "can_create_invoice",
-	// 				doc: frm.doc,
-	// 				args: {
-	// 					doctype: "Sales Invoice",
-	// 				},
-	// 				callback: function (r) {
-	// 					if (r.message) {
-	// 						// frm.add_custom_button(
-	// 						//   __("Sales Invoice"),
-	// 						//   function () {
-	// 						//     frappe.model.open_mapped_doc({
-	// 						//       method:
-	// 						//         "contracting_13.contracting_13.doctype.clearance.clearance.clearance_make_sales_invoice",
-	// 						//       frm: frm,
-	// 						//     });
-	// 						//   },
-	// 						//   __("Create")
-	// 						// );
-	// 					}  
-	// 					else if (
-	// 						frm.doc.insurances.filter((x) => !x.invocied).length > 0
-	// 					) {
-	// 						frm.add_custom_button(
-	// 							__("Insurance Payment"),
-	// 							function () {
-	// 								//frm.events.make_purchase_order(frm);
-	// 								frappe.call({
-	// 									method: "create_insurance_payment",
-	// 									doc: frm.doc,
-	// 									callback: function (frm) {
-	// 										frm.refresh_field("insurances");
-	// 										frm.refresh();
-	// 									},
-	// 								});
-	// 							},
-	// 							__("Create")
-	// 						);
-	// 					} else if (
-	// 						frm.doc.insurances.filter((x) => x.invocied && !x.returned)
-	// 							.length > 0
-	// 					) {
-	// 						frm.add_custom_button(
-	// 							__("Insurance Return"),
-	// 							function () {
-	// 								//frm.events.make_purchase_order(frm);
-	// 								frappe.call({
-	// 									method: "create_insurance_return",
-	// 									doc: frm.doc,
-	// 									callback: function (frm) {
-	// 										frm.refresh_field("insurances");
-	// 										frm.refresh();
-	// 									},
-	// 								});
-	// 							},
-	// 							__("Create")
-	// 						);
-	// 					}
-	// 				},
-	// 			});
-	// 		}
-	// 	}
+			if (frm.doc.clearance_type == "incoming") {
+				frm.call({
+					method: "can_create_invoice",
+					doc: frm.doc,
+					args: {
+						doctype: "Purchase Invoice",
+					},
+					callback: function (r) {
+						if (r.message) {
+							frm.add_custom_button(
+								__("Purchase Invoice"),
+								function () {
+									frappe.model.open_mapped_doc({
+										method:
+											"contracting_13.contracting_13.doctype.clearance.clearance.clearance_make_purchase_invoice",
+										frm: frm,
+									});
+								},
+								__("Create")
+							);
+						}
+					},
+				});
+			}
+			if (frm.doc.clearance_type == "InComing" && !frm.doc.is_sub_clearance) {
+				frm.call({
+					method: "can_create_invoice",
+					doc: frm.doc,
+					args: {
+						doctype: "Sales Invoice",
+					},
+					callback: function (r) {
+						if (r.message) {
+							// frm.add_custom_button(
+							//   __("Sales Invoice"),
+							//   function () {
+							//     frappe.model.open_mapped_doc({
+							//       method:
+							//         "contracting_13.contracting_13.doctype.clearance.clearance.clearance_make_sales_invoice",
+							//       frm: frm,
+							//     });
+							//   },
+							//   __("Create")
+							// );
+						}  
+						else if (
+							frm.doc.insurances.filter((x) => !x.invocied).length > 0
+						) {
+							frm.add_custom_button(
+								__("Insurance Payment"),
+								function () {
+									//frm.events.make_purchase_order(frm);
+									frappe.call({
+										method: "create_insurance_payment",
+										doc: frm.doc,
+										callback: function (frm) {
+											frm.refresh_field("insurances");
+											frm.refresh();
+										},
+									});
+								},
+								__("Create")
+							);
+						} else if (
+							frm.doc.insurances.filter((x) => x.invocied && !x.returned)
+								.length > 0
+						) {
+							frm.add_custom_button(
+								__("Insurance Return"),
+								function () {
+									//frm.events.make_purchase_order(frm);
+									frappe.call({
+										method: "create_insurance_return",
+										doc: frm.doc,
+										callback: function (frm) {
+											frm.refresh_field("insurances");
+											frm.refresh();
+										},
+									});
+								},
+								__("Create")
+							);
+						}
+					},
+				});
+			}
+		}
 	},
 	onload(frm) {
 		if (frm.is_new()) {
