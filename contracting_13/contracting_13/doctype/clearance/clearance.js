@@ -453,7 +453,7 @@ frappe.ui.form.on("Clearance", {
 
 		frappe.db.get_value('Project', frm.doc.project, 'cost_center')
 			.then(r => {
-				frm.set_value("cost_center", res.message.cost_center);
+				frm.set_value("cost_center", r.message.cost_center);
 				frm.refresh_field("cost_center");
 			})
 	},
