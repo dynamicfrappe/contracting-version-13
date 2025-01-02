@@ -205,6 +205,8 @@ frappe.ui.form.on("Clearance", {
 		}
 	},
 	onload(frm) {
+		console.log("onload");
+		
 		if (frm.is_new()) {
 
 			// clear item withous state 
