@@ -447,7 +447,7 @@ frappe.ui.form.on("Clearance", {
 			},
 			'callback': function(res){
 					frm.set_value("cost_center", res.message.cost_center)
-					// frm.refresh_field("cost_center")
+					frm.refresh_field("cost_center")
 			},
 		})
 	},
