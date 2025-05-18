@@ -52,7 +52,7 @@ data = {
         "Material Request Item":[
             {
                 "fieldname": "attach_image",
-                "fieldtype": "Image",
+                "fieldtype": "Attach Image",
                 "insert_after": "description",
                 "label": "Attach Image",
             },
